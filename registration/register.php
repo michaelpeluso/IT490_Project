@@ -5,10 +5,9 @@ $email    = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
 $password = $_POST['password']; 
 $first_name = filter_var($_POST['fname'], FILTER_SANITIZE_STRING);
 $last_name  = filter_var($_POST['lname'], FILTER_SANITIZE_STRING);
-$creation_time = date('Y-m-d H:i:s');
 // Password Hashing
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
+$hashed_user = password_hash($username, PASSWORD_DEFAULT);
 // CHANGE TO RABBITMQ PATH
 require_once('path/to/amqp.inc');
 // eventually we should change this to use ENVIORNMENT variables instead
@@ -21,7 +20,6 @@ $messageBody = json_encode([
     'password' => $hashed_password, 
     'first_name' => $first_name,
     'last_name' => $last_name,
-    'creation_time' => $creation_time // timestamp
 
 ]);
 
