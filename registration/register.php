@@ -1,13 +1,26 @@
+#!/usr/bin/php
 <?php
-require_once('path.inc');
-require_once('get_host_info.inc');
-require_once('rabbitMQLib.inc');
+
+// dependecies
+require_once('../path.inc');
+require_once('../get_host_info.inc');
+require_once('../rabbitMQLib.inc');
+
 // Input Handling and Basic Sanitization
 $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
 $email    = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
 $password = $_POST['password']; 
 $first_name = filter_var($_POST['fname'], FILTER_SANITIZE_STRING);
 $last_name  = filter_var($_POST['lname'], FILTER_SANITIZE_STRING);
+
+'''
+$username = "username";
+$email    = "e@mail.com";
+$password = "password"; 
+$first_name = "John";
+$last_name  = "Doe";
+'''
+
 // Hashing
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 $hashed_user = password_hash($username, PASSWORD_DEFAULT);
@@ -22,7 +35,7 @@ $request = array(
     'last_name' => $last_name,
 );
 
-$client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+$client = new rabbitMQClient("../testRabbitMQ.ini","testServer");
 $response = $client->send_request($request);
 
 echo "Server response: \n";
