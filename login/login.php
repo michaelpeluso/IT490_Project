@@ -1,52 +1,39 @@
+#!/usr/bin/php
 <?php
 
-// require
-require_once('path.inc');
-require_once('get_host_info.inc');
-require_once('rabbitMQLib.inc');
-require_once('path/to/amqp.inc');
+// dependecies
+require_once('../path.inc');
+require_once('../get_host_info.inc');
+require_once('../rabbitMQLib.inc');
 
-// retrieve data
-$username = $_POST["username"];
-$password = $_POST["password"];
-$email = $_POST["email"];
+// retrieve user values
+$username = "mp272"; //$_POST["username"];
+$password = "mp272"; //$_POST["username"];
+$email = "mp272@njit.edu"; //$_POST["username"];
 
 // hash
 $hashedUsername = password_hash($username, PASSWORD_DEFAULT);
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-// connect to rabbitMQ
-$conn = new AMQPConnection('rabbit_host', 'rabbit_port', 'rabbit_user', 'rabbit_password');
-$channel = $conn->channel();
+// make connection
+$client = new rabbitMQClient("../testRabbitMQ.ini","testServer");
 
-$exchange_name = 'login_data';
-$queue_name = 'login_queue';
-$channel->exchange_declare($exchange_name, false, true, false); 
-$channel->queue_declare($queue_name, false, true, false, false);
-$channel->queue_bind($queue_name, $exchange_name);
-
-$connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
-$channel = $connection->channel();
 
 // request
 $request = array(
-	'username' => $hasedUsername,
-	'password' => $hasedPassword,
-	'email' => $email
+	'username' => $hashedUsername,
+	'password' => $hashedPassword,
+	'email' => $email,
+	'message' => "login attepmt made by " . $username
 );
 
-$response = new AMQPMessage($request);
-$channel->basic_publish($response, $exchange_name);
+// resposnse
+$response = $client->send_request($request);
+//$response = $client->publish($request);
 
-$channel->close();
-$conn->close();
-
-// Handle response
-$payload = json_encode($response);
-echo "Client received response:\n";
-var_dump($response);
+echo "client received response: ".PHP_EOL;
+print_r($response);
 echo "\n\n";
-	echo "Registration completed.";
 
-?>
+echo $argv[0]." END".PHP_EOL;
 
