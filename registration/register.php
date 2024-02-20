@@ -1,41 +1,30 @@
 <?php
+require_once('path.inc');
+require_once('get_host_info.inc');
+require_once('rabbitMQLib.inc');
 // Input Handling and Basic Sanitization
 $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
 $email    = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
 $password = $_POST['password']; 
 $first_name = filter_var($_POST['fname'], FILTER_SANITIZE_STRING);
 $last_name  = filter_var($_POST['lname'], FILTER_SANITIZE_STRING);
-// Password Hashing
+// Hashing
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 $hashed_user = password_hash($username, PASSWORD_DEFAULT);
-// CHANGE TO RABBITMQ PATH
-require_once('path/to/amqp.inc');
-// eventually we should change this to use ENVIORNMENT variables instead
-$conn = new AMQPConnection('rabbit_host', 'rabbit_port', 'rabbit_user', 'rabbit_password');
-$channel = $conn->channel();
 
-$messageBody = json_encode([
+// eventually we should change this to use ENVIORNMENT variables instead
+$request = array(
+    'type' => "register",
     'username' => $username,
-    'email'    => $email,
-    'password' => $hashed_password, 
+    'email' => $email,
+    'password' => $hashed_password,
     'first_name' => $first_name,
     'last_name' => $last_name,
+);
 
-]);
+$client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+$response = $client->send_request($request);
 
-$exchange_name = 'registration_data';
-$queue_name = 'registration_queue';
-$channel->exchange_declare($exchange_name, false, true, false); 
-$channel->queue_declare($queue_name, false, true, false, false);
-$channel->queue_bind($queue_name, $exchange_name);
-
-// Send Message
-$message = new AMQPMessage($messageBody);
-$channel->basic_publish($message, $exchange_name);
-
-$channel->close();
-$conn->close();
-
-// Return
-echo "Registration data sent!"; 
+echo "Server response: \n";
+print_r($response);
 ?>
