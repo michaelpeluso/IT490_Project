@@ -7,9 +7,9 @@ require_once('../get_host_info.inc');
 require_once('../rabbitMQLib.inc');
 
 // retrieve user values
-$username = "mp272"; //$_POST["username"];
-$password = "mp272"; //$_POST["username"];
-$email = "mp272@njit.edu"; //$_POST["username"];
+$username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
+$password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+$email = filter_var($_POST['email'], FILTER_SANITIZE_STRING);
 
 // hash
 $hashedUsername = password_hash($username, PASSWORD_DEFAULT);
@@ -21,10 +21,11 @@ $client = new rabbitMQClient("../testRabbitMQ.ini","testServer");
 
 // request
 $request = array(
+	'type' => "login",
 	'username' => $hashedUsername,
 	'password' => $hashedPassword,
 	'email' => $email,
-	'message' => "login attepmt made by " . $username
+	'message' => "login attepmt made by " . $email
 );
 
 // resposnse

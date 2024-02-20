@@ -1,7 +1,7 @@
 <?php
-require_once('path.inc');
-require_once('get_host_info.inc');
-require_once('rabbitMQLib.inc');
+require_once('../path.inc');
+require_once('../get_host_info.inc');
+require_once('../rabbitMQLib.inc');
 // Input Handling and Basic Sanitization
 $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
 $email    = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
@@ -15,7 +15,7 @@ $hashed_user = password_hash($username, PASSWORD_DEFAULT);
 // eventually we should change this to use ENVIORNMENT variables instead
 $request = array(
     'type' => "register",
-    'username' => $username,
+    'username' => $hashed_user,
     'email' => $email,
     'password' => $hashed_password,
     'first_name' => $first_name,
