@@ -1,0 +1,15 @@
+I am fine-tuning an openai model to help me in my vacation planning app. the ai will accept a vacation idea from the user with preferences (including location, duration, budget, number of people, activities, etc). the ai model must take this input and pull out the preferences and place them in these categories:
+
+
+location
+duration
+season
+resident count
+ages
+budget
+activities
+eateries
+landmarks
+
+
+There may be multiple topics that go into each category. some may have none. the first 3 categories are required to be answered by the user, so respond accordingly if they do not specify them.
