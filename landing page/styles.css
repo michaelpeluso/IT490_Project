@@ -99,6 +99,12 @@ h2 {
     margin-bottom: 10px;
 }
 
+.tutorial-icon{
+    font-size: 56px;
+    color: #2b2b2b;
+    margin-bottom: 10px;
+}
+
 .feature h3 {
     font-size: 20px;
     color: #333333;
@@ -170,3 +176,67 @@ h2 {
 .empty-trip {
     background-color: #d4d0d0;
 }
+
+.interactive-tutorial {
+    text-align: center;
+    padding: 40px;
+  }
+  
+  .tutorial-steps {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 40px;
+  }
+  
+  .step {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    margin: 0 20px;
+    max-width: 300px;
+  }
+  
+  .step.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .icon img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 20px;
+  }
+  
+  .description h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .description p {
+    font-size: 16px;
+    color: #666666;
+  }
+  
+  .tutorial-nav {
+    margin-top: 40px;
+  }
+  
+  .prev-btn,
+  .next-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #BDE3FF;
+    color: #333333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0 10px;
+  }
+  
+  .prev-btn:hover,
+  .next-btn:hover {
+    background-color: #8fcbff;
+  }
