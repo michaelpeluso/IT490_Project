@@ -37,7 +37,7 @@ body {
     margin-right: 0;
 }
 
-/.navbar-links a {
+.navbar-links a {
     color: #333333;
     text-decoration: none;
     font-size: 22px;
@@ -47,32 +47,10 @@ body {
     transition: background-color 0.3s ease;
 }
 
-/.navbar-links a:hover {
+.navbar-links a:hover {
     background-color: #BDE3FF;
 }
-.navbar-links a {
-    position: relative;
-    font-size: 22px;
-    color: #333333;
-    font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 4px;
-    text-decoration: none;
-    margin-left: 40px;
-}
-.navbar-links a::before{
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #333333;
-    transition: .3s;
-}
-.navbar-links a:hover::before {
-    width: 100%;
-}
+
 main {
     padding: 40px;
 }
