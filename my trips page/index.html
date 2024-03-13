@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Plan a Trip</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBP-cI4n7ABeeEyy7c7O_MFiWgZbey7ogk&libraries=places"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="plan_trip.js"></script>
+  <style>
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+    .card-title {
+      text-align: center;
+    }
+    .add-to-trip {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .trip-container {
+      position: fixed;
+      top: 50px;
+      right: 20px;
+      width: 300px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .trip-container h3 {
+      margin-bottom: 20px;
+    }
+    .trip-item {
+      margin-bottom: 10px;
+    }
+    .card-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .section-title {
+      text-align: center;
+    }
+    .dropdown-toggle::after {
+      display: inline-block;
+      margin-left: 0.255em;
+      vertical-align: 0.255em;
+      content: "";
+      border-top: 0.3em solid;
+      border-right: 0.3em solid transparent;
+      border-bottom: 0;
+      border-left: 0.3em solid transparent;
+    }
+    .dropdown-toggle.collapsed::after {
+      transform: rotate(-90deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Plan a Trip</h1>
+    <div class="form-group">
+      <label for="search-area">Search Area:</label>
+      <input type="text" id="search-area" class="form-control" placeholder="Enter a location">
+    </div>
+    <button onclick="searchArea()" class="btn btn-primary">Search</button>
+    <div id="search-results" class="mt-4">
+      <div class="accordion" id="resultsAccordion">
+        <div class="card">
+          <div class="card-header" id="restaurantsHeading">
+            <h2 class="mb-0">
+              <button class="btn btn-link dropdown-toggle" type="button" data-toggle="collapse" data-target="#restaurantsCollapse" aria-expanded="true" aria-controls="restaurantsCollapse">
+                <span class="section-title">Nearby Restaurants</span>
+              </button>
+            </h2>
+          </div>
+          <div id="restaurantsCollapse" class="collapse show" aria-labelledby="restaurantsHeading" data-parent="#resultsAccordion">
+            <div class="card-body">
+              <div id="restaurants-container" class="row justify-content-center"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" id="hotelsHeading">
+            <h2 class="mb-0">
+              <button class="btn btn-link dropdown-toggle collapsed" type="button" data-toggle="collapse" data-target="#hotelsCollapse" aria-expanded="false" aria-controls="hotelsCollapse">
+                <span class="section-title">Nearby Hotels</span>
+              </button>
+            </h2>
+          </div>
+          <div id="hotelsCollapse" class="collapse" aria-labelledby="hotelsHeading" data-parent="#resultsAccordion">
+            <div class="card-body">
+              <div id="hotels-container" class="row justify-content-center"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" id="flightsHeading">
+            <h2 class="mb-0">
+              <button class="btn btn-link dropdown-toggle collapsed" type="button" data-toggle="collapse" data-target="#flightsCollapse" aria-expanded="false" aria-controls="flightsCollapse">
+                <span class="section-title">Nearby Flights</span>
+              </button>
+            </h2>
+          </div>
+          <div id="flightsCollapse" class="collapse" aria-labelledby="flightsHeading" data-parent="#resultsAccordion">
+            <div class="card-body">
+              <div id="flights-container" class="row justify-content-center"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="trip-container" class="trip-container">
+    <h3>My Trip</h3>
+    <div id="trip-items"></div>
+  </div>
+</body>
+</html>
