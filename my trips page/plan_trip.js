@@ -50,7 +50,7 @@ function searchNearbyRestaurants(latitude, longitude) {
                 <div class="card-body">
                   <h5 class="card-title">${restaurant.name}</h5>
                   <p class="card-text">Rating: ${restaurant.rating}</p>
-                  <p class="card-text">Address: ${restaurant.vicinity}</p>
+                  <p class="card-text">Address: <a href="https://www.google.com/maps/dir/Current+Location/${encodeURIComponent(restaurant.vicinity)}" target="_blank">${restaurant.vicinity}</a></p>
                   <i class="fas fa-plus-circle add-to-trip" data-restaurant='${JSON.stringify(restaurant).replace(/'/g, "&#39;")}'></i>
                 </div>
               </div>
@@ -78,32 +78,26 @@ function addRestaurantToTrip() {
   var restaurantAddress = restaurantData.vicinity;
   var restaurantRating = restaurantData.rating;
 
-  // Send the restaurant data to the server-side script using AJAX
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'add_to_trip.php', true);
-  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      // Restaurant added to trip successfully
-      var tripItem = document.createElement('div');
-      tripItem.className = 'trip-item';
-      tripItem.innerText = restaurantName;
-      document.getElementById('trip-items').appendChild(tripItem);
-    }
-  };
-  xhr.send('name=' + encodeURIComponent(restaurantName) + '&address=' + encodeURIComponent(restaurantAddress) + '&rating=' + encodeURIComponent(restaurantRating));
+  // Create a new trip item element
+  var tripItem = document.createElement('div');
+  tripItem.className = 'trip-item';
+  tripItem.innerHTML = `
+    <i class="fas fa-minus-circle remove-from-trip" data-restaurant='${JSON.stringify(restaurantData).replace(/'/g, "&#39;")}'></i>
+    <span>${restaurantName}</span>
+    `;
+
+  // Append the trip item to the "My Trips" column
+  document.getElementById('trip-items').appendChild(tripItem);
+
+  // Attach event listener to the remove button
+  var removeButton = tripItem.querySelector('.remove-from-trip');
+  removeButton.addEventListener('click', removeRestaurantFromTrip);
 }
 
-function searchNearbyHotels(latitude, longitude) {
-  // TODO: Implement the logic to search for nearby hotels using the Google Places API
-  // Display the results in the "hotels-container" element
+function removeRestaurantFromTrip() {
+  var tripItem = this.closest('.trip-item');
+  tripItem.remove();
 }
-
-function searchNearbyFlights(latitude, longitude) {
-  // TODO: Implement the logic to search for nearby flights using an appropriate API
-  // Display the results in the "flights-container" element
-}
-
 
 // Initialize the autocomplete functionality when the page loads
 google.maps.event.addDomListener(window, 'load', initAutocomplete);
