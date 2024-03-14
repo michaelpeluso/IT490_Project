@@ -42,12 +42,13 @@ $request = array(
 // resposnse
 $response = $client->send_request($request);
 //$response = $client->publish($request);
-echo ("after");
+
 echo "client received response: ".PHP_EOL;
 print_r($response);
 echo "\n\n";
 
 echo $argv[0]." END".PHP_EOL;
+
 echo (var_dump($response));
 echo ($response['status']);
 if ($response['status'] === "ok"){
@@ -58,4 +59,6 @@ if ($response['status'] === "ok"){
 	$_SESSION["email"] = $response['email'];
 	header("Location: http://100.35.46.200/IT490_Project/registered/");
 }
+?>
+
 
