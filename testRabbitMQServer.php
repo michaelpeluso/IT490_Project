@@ -80,19 +80,25 @@ function doLogin($password, $email)
     {
 	echo "failed to execute login query:".PHP_EOL;
     	echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
-    	return ("server error");
+    	return array(
+	'status'=> "error",
+	'error'=> "Server error");
     exit(0);
     }
     if($response -> num_rows == 0){
 	echo "wrong credentials";
-	return "wrong credentials";
+	return array(
+	'status'=> "error",
+	'error'=> "Wrong credentials");
     }
     
     $row = $response -> fetch_assoc();
     if(!password_verify($password, $row['password'])){
     	
     	echo "wrong password";
-    	return "wrong credentials";
+    	return array(
+	'status'=> "error",
+	'error'=> "Wrong credentials");
     }
     else {
     	echo "password is correct!";
@@ -108,6 +114,9 @@ function doLogin($password, $email)
     {
 	echo "failed to execute request query:".PHP_EOL;
 	echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
+	return array(
+	'status'=> "error",
+	'error'=> "Server Error");
     exit(0);
     }
     
@@ -120,7 +129,9 @@ function doLogin($password, $email)
     {
 	echo "failed to execute request query:".PHP_EOL;
 	echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
-	return ("server error");
+	return array(
+	'status'=> "error",
+	'error'=> "Server Error");
     exit(0);
     }
     
@@ -160,7 +171,9 @@ function doRegister($password,$email,$firstName,$lastName)
     if ($mydb->errno != 0)	
     {
 	echo "failed to connect to database: ". $mydb->error . PHP_EOL;
-	return ("server error");
+	return array(
+	'status'=> "error",
+	'error'=> "Server Error");
 	exit(0);
     }
 
@@ -172,13 +185,17 @@ function doRegister($password,$email,$firstName,$lastName)
     $response = $mydb->query($query);
     if($response -> num_rows>=1){
 	echo "username or email in use";
-	return "username or email in use";
+	return array(
+	'status'=> "error",
+	'error'=> "username or email in use");
     }
     if ($mydb->errno != 0)
     {
 	echo "failed to execute request query:".PHP_EOL;
     	echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
-    	return ("server error");
+    	return array(
+	'status'=> "error",
+	'error'=> "Server Error");
     exit(0);
     }
     
@@ -192,7 +209,9 @@ function doRegister($password,$email,$firstName,$lastName)
     {
 	echo "failed to execute request query:".PHP_EOL;
     	echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
-    	return ("server error");
+    	return array(
+	'status'=> "error",
+	'error'=> "Server Error");
     exit(0);
     }
 
@@ -205,14 +224,16 @@ function doRegister($password,$email,$firstName,$lastName)
     {
 	echo "failed to execute request query:".PHP_EOL;
 	echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
-	return ("server error");
+	return array(
+	'status'=> "error",
+	'error'=> "Server Error");
     exit(0);
     }
     // lookup username in database return empty
     // register him
     $mydb->close();
     echo "Registered:".$email;
-    return array("status"=>"ok");
+    return array("status"=>"ok", "message"=>"User Registered");
     
 }
 
