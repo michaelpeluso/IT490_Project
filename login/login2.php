@@ -81,6 +81,7 @@ require_once('../rabbitMQLib.inc');
 
 $email = $password ="";
 $emailErr = $passwordErr = "";
+$returnErr = "";
 $valid = true;
 
 if ($_SERVER["REQUEST_METHOD"]=="POST"){
@@ -129,6 +130,7 @@ if ($_SERVER["REQUEST_METHOD"]=="POST"){
         <?php 
         
         echo 	'
+        <span class="error">'.$returnErr .'</span>
             <div>
         	<label for="email">Email:</label><br>
             	<input type="email" id="email" name="email" value="'.$email.'" >
@@ -209,7 +211,10 @@ if ($response['status'] === "ok"){
 	$_SESSION["last_name"] = $response['last_name'];
 	$_SESSION["email"] = $response['email'];
 	header("Location: http://100.35.46.200/IT490_Project/registered/");
+}else{
+$returnErr = $response['message'];
 }
+
 }
 
 ?>
