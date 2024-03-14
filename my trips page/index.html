@@ -39,13 +39,24 @@
     .trip-item {
       margin-bottom: 10px;
     }
-    .card-text {
+    .section-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+    .card-title {
+      text-align: center;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .section-title {
-      text-align: center;
+    .card-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .dropdown-toggle::after {
       display: inline-block;
@@ -59,6 +70,25 @@
     }
     .dropdown-toggle.collapsed::after {
       transform: rotate(-90deg);
+    }
+    .card-img-placeholder {
+      height: 200px;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 18px;
+    }
+    .nearby-restaurants-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .restaurant-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
   </style>
 </head>

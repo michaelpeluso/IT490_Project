@@ -36,7 +36,10 @@ function searchNearbyRestaurants(latitude, longitude) {
       restaurantsContainer.innerHTML = ''; // Clear previous results
 
       if (results.length > 0) {
-        restaurantsContainer.innerHTML = '<h2 class="text-center mb-4">Nearby Restaurants</h2>';
+        restaurantsContainer.innerHTML = '<h2 class="nearby-restaurants-title text-center mb-4">Nearby Restaurants</h2>';
+        var restaurantCardsContainer = document.createElement('div');
+        restaurantCardsContainer.className = 'restaurant-cards';
+
         results.forEach(restaurant => {
           var restaurantInfo = `
             <div class="col-md-4 mb-4">
@@ -53,9 +56,10 @@ function searchNearbyRestaurants(latitude, longitude) {
               </div>
             </div>
           `;
-          restaurantsContainer.innerHTML += restaurantInfo;
+          restaurantCardsContainer.innerHTML += restaurantInfo;
         });
 
+        restaurantsContainer.appendChild(restaurantCardsContainer);
         // Attach event listener to "Add to Trip" buttons
         var addButtons = document.getElementsByClassName('add-to-trip');
         for (var i = 0; i < addButtons.length; i++) {
