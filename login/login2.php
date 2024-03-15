@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE>
 <html>
-<head>
-    <title>Registration Form</title>
+	<head>
+	<title>Login Form</title>
     <style>
-    body{
+    	body{
    		background-color: #BDE3FF;
    		height:100%;
    		width:100%;
@@ -37,8 +37,7 @@
             background-color: #FFFFFF;
             width: 25%;
             height: 40%; 
-            margin:auto;
-            margin-top: 1% auto; 
+            margin: 10% auto; 
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 40px;
@@ -72,45 +71,29 @@
             margin: 20px auto 0 auto; 
         }
     </style>
-</head>
-<body>
-
-<?php
+	</head>
+	<body>
+	<?php
 //DEPENDENCIES
 require_once('../path.inc');
 require_once('../get_host_info.inc');
 require_once('../rabbitMQLib.inc');
 
-$email = $password = $first_name = $last_name  = $confPassword ="";
-$emailErr = $passwordErr = $first_nameErr = $last_nameErr  = $confPasswordErr ="";
+$email = $password ="";
+$emailErr = $passwordErr = "";
+$returnErr = "";
 $valid = true;
 
 if ($_SERVER["REQUEST_METHOD"]=="POST"){
 	$email    = $_POST['email'];
 	$password = $_POST['password'];
-	$confPassword = $_POST['confPassword'];  
-	$first_name = $_POST['fname'];
-	$last_name  = $_POST['lname'];
 	
-	
-	if($first_name === ""){
-		$first_nameErr = "Must include a first name.<br>";
-		$valid = false;
-	}
-	if($last_name === ""){
-		$last_nameErr = "Must include a last name.<br>";
-		$valid = false;
-	}
 	if($password === ""){
 		$passwordErr = "Must include a password.<br>";
 		$valid = false;
 	}
 	if($email === ""){
 		$emailErr = "Must include an email.<br>";
-		$valid = false;
-	}
-	if($confPassword === ""){
-		$confPasswordErr = "Must include a confirmation password.<br>";
 		$valid = false;
 	}
 	if(filter_var($email, FILTER_VALIDATE_EMAIL) == false){
@@ -133,91 +116,105 @@ if ($_SERVER["REQUEST_METHOD"]=="POST"){
 		$passwordErr = $passwordErr."Passowrd must include special character(s).<br>";
 		$valid = false;
 	}
-	if(!($password == $confPassword)){
-		$confPasswordErr = "Passowrds must be equal<br>";
-		$valid = false;
-	}
 }
 
 
 	?>
-	<div class="container">
-		<div class="logo"><a class="test" href="../">
-		TRIPTELLER</a>
-		</div>
-    <div class="form-container">         <h2 style = "text-align: center;">Register</h2>
 	
-        <form action="<?php  echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="POST">
+	<div class="container">
+		<div class="logo">
+		<a class="test" href="../">TRIPTELLER</a>
+		</div>
+		<div class="form-container">         <h2 style = "text-align: center;">Login</h2>
+			<form action="<?php  echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="POST">
         <?php 
         
-        echo 	'<label for="fname">First Name:</label><br>
-	        <input type="text" id="fname" name="fname"  value="'.$first_name.'" >
-	        <span class="error">'.$first_nameErr.'</span><br><br>
-
-            	<label for="lname">Last Name:</label><br>
-            	<input type="text" id="lname" name="lname" value="'.$last_name.'" >
-		<span class="error">'.$last_nameErr.'</span><br><br>
-
-            	<label for="email">Email:</label><br>
+        echo 	'
+        <span class="error">'.$returnErr .'</span>
+            <div>
+        	<label for="email">Email:</label><br>
             	<input type="email" id="email" name="email" value="'.$email.'" >
 		<span class="error">'.$emailErr .'</span><br><br>
-
+	    </div>
+	    <div>
             	<label for="password">Password:</label><br>
             	<input type="password" id="password" name="password" value="'.$password.'" >
             	<span class="error">'.$passwordErr .'</span><br><br>
-            
-            	<label for="password">Confirm Password:</label><br>
-            	<input type="password" id="confPassword" name="confPassword" value="'.$confPassword.'" >
-            	<span class="error">'.$confPasswordErr .'</span><br><br>
-            
-	    	<label for="login">Already have an account yet? <a class="test2" href="../login/login2.php">login!</label><br>
-	    
-            	<input type="submit" style = "align-items: center;"="Register" value="Register"> ';
+            </div>
+            <div>
+            	<label for="sign up">Don\'t have an account yet? <a class="test2" href="../registration/register.php">sign up!</label><br>
+	    </div>
+	    <div>
+            	<input type="submit" style = "align-items: center;"="Register" value="Register"> 
+            </div>';
+            	
         ?>
             
         </form>
-    </div> 
-    </div>
-</body>
+			
+			
+		</div>
+		</div>
+	</body>
 </html>
+
 <?php
 if($_SERVER["REQUEST_METHOD"]=="POST" && $valid == true){
-// Input Handling and Basic Sanitization
-$email    = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-$password = filter_var($_POST['password'], FILTER_SANITIZE_EMAIL);
-$confPassword = filter_var($_POST['confPassword'], FILTER_SANITIZE_EMAIL);  
-$first_name = filter_var($_POST['fname'], FILTER_SANITIZE_STRING);
-$last_name  = filter_var($_POST['lname'], FILTER_SANITIZE_STRING);
-
-// Hashing
-$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-//encrypting and encoding
+global $SODIUM_KEY;
 $SODIUM_KEY_hex = "316d84ecd4bfd5c19ff9b3ad48c2780d8553a23a60a22d1e14c583decbd6fea9";
+
+// retrieve user values
+
+$password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+$email = filter_var($_POST['email'], FILTER_SANITIZE_STRING);
+
+
+// make connection
+$client = new rabbitMQClient("../testRabbitMQ.ini","testServer");
+
+//encrypt and encode
 $SODIUM_KEY = sodium_hex2bin($SODIUM_KEY_hex);
 $nonce = random_bytes( SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
+echo base64_encode($nonce);
 
 $encrypted_email = sodium_crypto_secretbox( $email, $nonce, $SODIUM_KEY);
+$encrypted_pass = sodium_crypto_secretbox( $password, $nonce, $SODIUM_KEY);
 
 $encode_email = base64_encode($nonce . $encrypted_email);
+$encode_pass  = base64_encode($nonce . $encrypted_pass );
 
-// eventually we should change this to use ENVIORNMENT variables instead
+echo ("before");
+// request
 $request = array(
-    'type' => "register",
-    'email' => $encode_email,
-    'password' => $hashed_password,
-    'first_name' => $first_name,
-    'last_name' => $last_name,
+	'type' => "login",
+	'password' => $encode_pass,
+	'email' => $encode_email,
+	'message' => "login attepmt made by "
 );
 
-$client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+
+// resposnse
 $response = $client->send_request($request);
-
-echo "Server response: \n";
+//$response = $client->publish($request);
+echo ("after");
+echo "client received response: ".PHP_EOL;
 print_r($response);
+echo "\n\n";
 
+echo $argv[0]." END".PHP_EOL;
+echo (var_dump($response));
+echo ($response['status']);
 if ($response['status'] === "ok"){
-	header("Location:  http://100.35.46.200/IT490_Project/login/login2.php");
+	session_start();
+	$_SESSION["key"] = $response['key'];
+	$_SESSION["first_name"] = $response['first_name'];
+	$_SESSION["last_name"] = $response['last_name'];
+	$_SESSION["email"] = $response['email'];
+	header("Location: http://100.35.46.200/IT490_Project/registered/");
+}else{
+$returnErr = $response['message'];
 }
+
 }
 
 ?>
