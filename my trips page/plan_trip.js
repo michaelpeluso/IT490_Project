@@ -22,7 +22,7 @@ function searchArea() {
       searchNearbyRestaurants(latitude, longitude);
 
       // Search for nearby flights
-      searchNearbyFlights(startingLocation, latitude, longitude);
+      searchFlights(startingLocation, searchInput);
     } else {
       console.error('Geocoding error:', status);
     }
@@ -107,86 +107,100 @@ function removeRestaurantFromTrip() {
   tripItem.remove();
 }
 
-function searchNearbyFlights(startingLocation, destinationLatitude, destinationLongitude) {
-  // Geocode the starting location to get the nearest airport
-  var geocoder = new google.maps.Geocoder();
-  geocoder.geocode({ address: startingLocation }, function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-      var startingLatitude = results[0].geometry.location.lat();
-      var startingLongitude = results[0].geometry.location.lng();
+function searchFlights(origin, destination) {
+  var apiKey = 'qhyCpeOEeXXL7NAtF7PowMPR3HBP8IcJ';
+  var apiSecret = '6SMREPe2c5oBPY9O';
 
-      // Find the nearest airport to the starting location using the Tripadvisor API
-      var nearestAirportUrl = `https://api.content.tripadvisor.com/api/v1/location/nearby_search?latLong=${startingLatitude},${startingLongitude}&category=airport&key=302D221339A3427FA7DA2DC8725BC77D`;
+  var url = 'https://api.amadeus.com/v1/security/oauth2/token';
+  var data = {
+    grant_type: 'client_credentials',
+    client_id: apiKey,
+    client_secret: apiSecret
+  };
 
-      fetch(nearestAirportUrl)
-        .then(response => response.json())
-        .then(data => {
-          if (data.data && data.data.length > 0) {
-            var nearestAirport = data.data[0];
-            var nearestAirportId = nearestAirport.location_id;
-
-            // Search for flights from the nearest airport to the destination using the Tripadvisor API
-            var flightsUrl = `https://api.content.tripadvisor.com/api/v1/flights/search?sourceAirportId=${nearestAirportId}&destinationLatitude=${destinationLatitude}&destinationLongitude=${destinationLongitude}&key=302D221339A3427FA7DA2DC8725BC77D`;
-
-            fetch(flightsUrl)
-              .then(response => response.json())
-              .then(flightData => {
-                var flightsContainer = document.getElementById('flights-container');
-                flightsContainer.innerHTML = ''; // Clear previous results
-
-                if (flightData.data && flightData.data.length > 0) {
-                  var flightsHTML = '<h2 class="section-title mb-4">Nearby Flights</h2>';
-
-                  flightData.data.forEach(flight => {
-                    flightsHTML += `
-                      <div class="col-md-4 mb-4">
-                        <div class="card">
-                          <div class="card-body">
-                            <h5 class="card-title">${flight.airlineName}</h5>
-                            <p class="card-text">Departure: ${flight.departureTime}</p>
-                            <p class="card-text">Arrival: ${flight.arrivalTime}</p>
-                            <p class="card-text">Price: ${flight.price}</p>
-                            <button class="btn btn-primary add-flight-to-trip" data-flight='${JSON.stringify(flight)}'>Add to Trip</button>
-                          </div>
-                        </div>
-                      </div>
-                    `;
-                  });
-
-                  flightsContainer.innerHTML = flightsHTML;
-
-                  // Attach event listeners to "Add to Trip" buttons for flights
-                  var addFlightButtons = document.getElementsByClassName('add-flight-to-trip');
-                  for (var i = 0; i < addFlightButtons.length; i++) {
-                    addFlightButtons[i].addEventListener('click', addFlightToTrip);
-                  }
-                } else {
-                  flightsContainer.innerHTML = '<p class="text-center">No nearby flights found.</p>';
-                }
-              })
-              .catch(error => {
-                console.error('Error fetching flights:', error);
-                var flightsContainer = document.getElementById('flights-container');
-                flightsContainer.innerHTML = '<p class="text-center">An error occurred while searching for flights.</p>';
-              });
-          } else {
-            console.error('No nearest airport found.');
-            var flightsContainer = document.getElementById('flights-container');
-            flightsContainer.innerHTML = '<p class="text-center">No nearest airport found.</p>';
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching nearest airport:', error);
-          var flightsContainer = document.getElementById('flights-container');
-          flightsContainer.innerHTML = '<p class="text-center">An error occurred while searching for the nearest airport.</p>';
-        });
-    } else {
-      console.error('Geocoding error:', status);
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams(data)
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error getting access token: ' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      var accessToken = data.access_token;
+      searchFlightOffers(accessToken, origin, destination);
+    })
+    .catch(error => {
+      console.error(error);
       var flightsContainer = document.getElementById('flights-container');
-      flightsContainer.innerHTML = '<p class="text-center">An error occurred while geocoding the starting location.</p>';
-    }
-  });
+      flightsContainer.innerHTML = '<p class="text-center">An error occurred while getting the access token.</p>';
+    });
 }
+
+function searchFlightOffers(accessToken, origin, destination) {
+  var url = 'https://api.amadeus.com/v2/shopping/flight-offers';
+  var data = {
+    originLocationCode: origin,
+    destinationLocationCode: destination,
+    departureDate: '2023-06-01',
+    adults: 1,
+    max: 5
+  };
+
+  fetch(url, {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer ' + accessToken
+    },
+    params: data
+  })
+    .then(response => response.json())
+    .then(data => {
+      var flightsContainer = document.getElementById('flights-container');
+      flightsContainer.innerHTML = ''; // Clear previous results
+
+      if (data && data.data && data.data.length > 0) {
+        var flightsHTML = '<h2 class="section-title mb-4">Available Flights</h2>';
+
+        data.data.forEach(flight => {
+          flightsHTML += `
+            <div class="col-md-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">${flight.itineraries[0].segments[0].carrierCode}</h5>
+                  <p class="card-text">Departure: ${flight.itineraries[0].segments[0].departure.at}</p>
+                  <p class="card-text">Arrival: ${flight.itineraries[0].segments[flight.itineraries[0].segments.length - 1].arrival.at}</p>
+                  <p class="card-text">Price: ${flight.price.total}</p>
+                  <button class="btn btn-primary add-flight-to-trip" data-flight='${JSON.stringify(flight)}'>Add to Trip</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        flightsContainer.innerHTML = flightsHTML;
+
+        // Attach event listeners to "Add to Trip" buttons for flights
+        var addFlightButtons = document.getElementsByClassName('add-flight-to-trip');
+        for (var i = 0; i < addFlightButtons.length; i++) {
+          addFlightButtons[i].addEventListener('click', addFlightToTrip);
+        }
+      } else {
+        flightsContainer.innerHTML = '<p class="text-center">No flights found.</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching flights:', error);
+      var flightsContainer = document.getElementById('flights-container');
+      flightsContainer.innerHTML = '<p class="text-center">An error occurred while searching for flights.</p>';
+    });
+}
+
 
 
 function addFlightToTrip() {
