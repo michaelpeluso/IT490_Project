@@ -111,39 +111,36 @@ function searchFlights(origin, destination) {
   var apiKey = 'qhyCpeOEeXXL7NAtF7PowMPR3HBP8IcJ';
   var apiSecret = '6SMREPe2c5oBPY9O';
 
-  var url = 'https://api.amadeus.com/v1/security/oauth2/token';
-  var data = {
+  // Step 2: Request an Access Token
+  var tokenUrl = 'https://test.api.amadeus.com/v1/security/oauth2/token';
+  var tokenData = {
     grant_type: 'client_credentials',
     client_id: apiKey,
     client_secret: apiSecret
   };
 
-  fetch(url, {
+  fetch(tokenUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    body: new URLSearchParams(data)
+    body: new URLSearchParams(tokenData)
   })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Error getting access token: ' + response.status);
-      }
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
       var accessToken = data.access_token;
+      // Step 3: Use the Access Token
       searchFlightOffers(accessToken, origin, destination);
     })
     .catch(error => {
-      console.error(error);
+      console.error('Error getting access token:', error);
       var flightsContainer = document.getElementById('flights-container');
       flightsContainer.innerHTML = '<p class="text-center">An error occurred while getting the access token.</p>';
     });
 }
 
 function searchFlightOffers(accessToken, origin, destination) {
-  var url = 'https://api.amadeus.com/v2/shopping/flight-offers';
+  var url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
   var data = {
     originLocationCode: origin,
     destinationLocationCode: destination,
@@ -200,6 +197,7 @@ function searchFlightOffers(accessToken, origin, destination) {
       flightsContainer.innerHTML = '<p class="text-center">An error occurred while searching for flights.</p>';
     });
 }
+
 
 
 
