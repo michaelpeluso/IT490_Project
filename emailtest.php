@@ -14,7 +14,7 @@ $mail ->isSMTP();
 $mail ->Host='smtp.gmail.com';
 $mail ->SMTPAuth= true;
 $mail ->Username = 'triptellercompany@gmail.com';
-$mail ->Password = 'frgk chzi bxmw kkfz';
+$mail ->Password = '';
 $mail ->Port = 465;
 $mail ->SMTPSecure = "ssl";
 $mail ->isHTML(false);
