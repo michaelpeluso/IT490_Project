@@ -7,22 +7,32 @@
         <style>
             .grid-container {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
                 gap: 20px;
             }
-
             .review-cell {
                 border: 1px solid #ccc;
                 padding: 20px;
-                max-height: 15rem;
+                margin-bottom: 30px;
+            }
+            .review-userid,
+            .review-serviceid,
+            p {
+                margin: 10px 0;
             }
             .star {
-                width: 10px;
-                height: 10px;
+                width: 15px;
+                height: 15px;
                 display: inline-block;
                 background-color: transparent;
                 border: 2px solid black;
                 border-radius: 100%;
+                margin: 0 3px 5px 3px;
+            }
+            .review-text {
+                height: 100px;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             @media screen and (max-width: 600px) {
