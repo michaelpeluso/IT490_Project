@@ -70,10 +70,12 @@ function searchArea() {
 
       // Search for nearby restaurants
       searchNearbyRestaurants(latitude, longitude);
+      searchHotels(latitude, longitude);
     } else {
       console.error('Geocoding error:', status);
     }
   });
+
 }
 
 
@@ -357,3 +359,80 @@ function removeFlightFromTrip() {
 
 // Initialize the autocomplete functionality when the page loads
 google.maps.event.addDomListener(window, 'load', initAutocomplete);
+
+async function searchHotels(latitude, longitude) {
+  try {
+    const accessToken = await fetchAccessToken();
+    const hotelsResponse = await fetch(`https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode?latitude=${latitude}&longitude=${longitude}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+
+    if (!hotelsResponse.ok) {
+      throw new Error('Failed to retrieve hotels data');
+    }
+
+    const hotelsData = await hotelsResponse.json();
+    displayHotels(hotelsData.data);
+  } catch (error) {
+    console.error('Error searching hotels:', error);
+  }
+}
+
+function displayHotels(hotels) {
+  const hotelsContainer = document.getElementById('hotels-container');
+  hotelsContainer.innerHTML = '';
+
+  if (hotels.length === 0) {
+    hotelsContainer.innerHTML = '<p class="text-center">No nearby hotels found.</p>';
+    return;
+  }
+
+  hotels.forEach(hotel => {
+    const hotelRow = document.createElement('div');
+    hotelRow.className = 'hotel-row';
+    hotelRow.innerHTML = `
+      <img src="${hotel.media ? hotel.media[0].uri : ''}" alt="${hotel.name}" class="hotel-image">
+      <div class="hotel-details">
+        <div class="hotel-name">${hotel.name}</div>
+        <div class="hotel-rating">Rating: ${hotel.rating}</div>
+        <div class="hotel-price">Price: ${hotel.price ? hotel.price.currency + ' ' + hotel.price.total : 'N/A'}</div>
+        <i class="fas fa-plus-circle add-to-favorites" data-hotel='${JSON.stringify(hotel)}'></i>
+      </div>
+    `;
+    hotelsContainer.appendChild(hotelRow);
+  });
+
+  // Attach event listeners to "Add to Favorites" buttons
+  const addToFavoritesButtons = document.getElementsByClassName('add-to-favorites');
+  for (let i = 0; i < addToFavoritesButtons.length; i++) {
+    addToFavoritesButtons[i].addEventListener('click', addHotelToFavorites);
+  }
+}
+
+function addHotelToFavorites() {
+  const hotelData = JSON.parse(this.getAttribute('data-hotel'));
+  const hotelName = hotelData.name;
+  const hotelPrice = hotelData.price ? hotelData.price.currency + ' ' + hotelData.price.total : 'N/A';
+
+  // Create a new trip item element for the hotel
+  const tripItem = document.createElement('div');
+  tripItem.className = 'trip-item';
+  tripItem.innerHTML = `
+    <i class="fas fa-minus-circle remove-from-trip" data-hotel='${JSON.stringify(hotelData)}'></i>
+    <span>${hotelName} (${hotelPrice})</span>
+  `;
+
+  // Append the trip item to the "My Trips" column
+  document.getElementById('trip-items').appendChild(tripItem);
+
+  // Attach event listener to the remove button
+  const removeButton = tripItem.querySelector('.remove-from-trip');
+  removeButton.addEventListener('click', removeHotelFromTrip);
+}
+
+function removeHotelFromTrip() {
+  const tripItem = this.closest('.trip-item');
+  tripItem.remove();
+}

@@ -93,6 +93,40 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+    .hotel-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .hotel-image {
+      width: 150px;
+      height: 100px;
+      object-fit: cover;
+      margin-right: 20px;
+    }
+    .hotel-details {
+      flex-grow: 1;
+    }
+    .hotel-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .hotel-rating {
+      margin-bottom: 5px;
+    }
+    .hotel-price {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .add-to-favorites {
+      margin-left: 20px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -132,23 +166,22 @@
         </div>
         <div class="card">
           <div class="card-header" id="hotelsHeading">
-            <h2 class="mb-0">
-              <button class="btn btn-link dropdown-toggle collapsed" type="button" data-toggle="collapse" data-target="#hotelsCollapse" aria-expanded="false" aria-controls="hotelsCollapse">
-                <span class="section-title">Nearby Hotels</span>
+           <h2 class="mb-0">
+              <button class="btn btn-link dropdown-toggle collapsed" type="button" data-toggle="collapse" data-target="#hotelsCollapse" aria-expanded="false" aria-controls="hotelsCollapse">                <span class="section-title">Nearby Hotels</span>
               </button>
             </h2>
-          </div>
-          <div id="hotelsCollapse" class="collapse" aria-labelledby="hotelsHeading" data-parent="#resultsAccordion">
+         </div>
+       <div id="hotelsCollapse" class="collapse" aria-labelledby="hotelsHeading" data-parent="#resultsAccordion">
             <div class="card-body">
-              <div id="hotels-container" class="row justify-content-center"></div>
+              <div id="hotels-container"></div>
             </div>
           </div>
-        </div>
+    </div>
         <div class="card">
           <div class="card-header" id="flightsHeading">
             <h2 class="mb-0">
               <button class="btn btn-link dropdown-toggle collapsed" type="button" data-toggle="collapse" data-target="#flightsCollapse" aria-expanded="false" aria-controls="flightsCollapse">
-                <span class="section-title">Nearby Flights</span>
+              <span class="section-title">Nearby Flights</span>
               </button>
             </h2>
           </div>
@@ -157,8 +190,8 @@
               <div id="flights-container" class="row justify-content-center"></div>
             </div>
           </div>
-        </div>
       </div>
+    </div>
     </div>
   </div>
 
