@@ -23,7 +23,7 @@ $user_id = 1; // Replace with the actual user ID
 
 // Prepare and execute the SQL query to insert the restaurant data into the database
 $stmt = $conn->prepare("INSERT INTO reviews (user_id, service_id, rating_value, rating_body) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("issd", $user_id, $name, $address, $rating);
+$stmt->bind_param("issd", $user_id, $name, $address, $rating); // prevents sql injection
 $stmt->execute();
 
 // Close the statement and database connection

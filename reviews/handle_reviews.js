@@ -1,15 +1,14 @@
 // global variables
 const max_review_length = 300; // characters
 
-// Sample data (replace with actual data fetched from server)
-// Sample data (replace with actual data fetched from server)
+// Sample data
 const reviews = [
     { user_id: "user1", service_id: "service1", rating_text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", rating_value: 4 },
     {
         user_id: "user2",
         service_id: "service2",
         rating_text:
-            "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sit amet lorem ut libero pharetra tempor. Sed tincidunt est condimentum lacus bibendum, in fermentum justo posuere. Aenean in lacus vulputate elit venenatis eleifend vel nec diam. Etiam velit nisl, commodo ut egestas sed, lobortis quis turpis. Donec ac posuere mauris. Integer sodales porta faucibus. Nullam sed tempus lectus. Nulla in ex malesuada, feugiat elit eu, condimentum lectus. Duis ligula enim, aliquet sed dictum at, semper eget erat. Phasellus fermentum mattis sem, id posuere velit sollicitudin ut. Integer vulputate porta risus et feugiat. Pellentesque mollis quam nec leo laoreet feugiat. Nulla maximus nibh non nibh molestie posuere. Maecenas interdum, erat nec efficitur cursus, purus mauris aliquam quam, vitae tincidunt ex massa et ex. Nam nec scelerisque tortor. Nullam pharetra leo sit amet mi porta, id mattis dui pulvinar. Vivamus sapien orci, mollis ut justo ac, mattis facilisis leo. Proin interdum convallis lorem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec vehicula eros blandit ligula scelerisque porttitor. Morbi nunc lacus, bibendum non lobortis nec, feugiat et enim. Sed elementum, felis vitae mattis placerat, velit purus fringilla ex, ut dictum sem libero quis ligula. Fusce semper leo mi, et aliquet diam tristique laoreet.",
         rating_value: 5,
     },
     { user_id: "user3", service_id: "service3", rating_text: "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae.", rating_value: 3 },
@@ -25,7 +24,7 @@ const reviews = [
 // fetch and display item reviews
 function fetchReviews() {
     $.ajax({
-        url: "sample_reviews.json", // testing only
+        url: "sample_reviews.json", // "fetch_reviews.php"
         type: "GET",
         dataType: "json",
         success: function (data) {
@@ -34,6 +33,11 @@ function fetchReviews() {
         },
         error: function (xhr, status, error) {
             console.error("Error fetching reviews:", error);
+            reviewsContainer.innerHTML = `
+                <p style="background-color: #f8d7da; color: #721c24; padding: 10px; border: 1px solid #f5c6cb;">
+                    Error: Something went wrong fetching your reviews.
+                </p>
+            `;
         },
     });
 }
@@ -73,7 +77,6 @@ function displayReviews() {
                 ${readMoreLink}
             </div>
         `;
-
         reviewsContainer.appendChild(reviewElement);
 
         // update star rating
@@ -83,6 +86,26 @@ function displayReviews() {
                 star.style.backgroundColor = "black";
             }
         });
+
+        // add event listener to read more
+        const readMoreButton = reviewElement.querySelector(".read-more");
+        if (readMoreButton) {
+            readMoreButton.addEventListener("click", function () {
+                $(reviewElement).find(".read-more").text("Close");
+
+                const clonedReview = $(reviewElement).clone();
+                clonedReview.find(".review-text").text(review.rating_text).removeClass("review-text");
+
+                $("#modal-review").html(clonedReview);
+                $("#modal").css("display", "block");
+
+                // close modal
+                $(".read-more").click(() => {
+                    const isModalVisible = $("#modal").toggle().is(":visible");
+                    $(".read-more").text(isModalVisible ? "Close" : "Read more");
+                });
+            });
+        }
     });
 }
 
@@ -99,3 +122,10 @@ const service_id = 123; // replace with actual item id
 document.addEventListener("DOMContentLoaded", function () {
     fetchReviews(service_id);
 });
+
+// close modal when click off
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+};
