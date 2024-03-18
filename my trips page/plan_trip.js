@@ -281,16 +281,26 @@ function searchFlightOffers(accessToken, originCode, destinationCode, departureD
           var flightCardBody = document.createElement('div');
           flightCardBody.className = 'card-body';
 
-          var flightDetails = `
-          <h5 class="card-title">${flight.itineraries[0].segments[0].carrierCode} ${flight.itineraries[0].segments[0].number}</h5>
-          <p class="card-text">Departure: ${flight.itineraries[0].segments[0].departure.at}</p>
-          <p class="card-text">Arrival: ${flight.itineraries[0].segments[flight.itineraries[0].segments.length - 1].arrival.at}</p>
-          <p class="card-text">Terminal: ${flight.itineraries[0].segments[0].departure.terminal}</p>
-          <p class="card-text">Gate: ${flight.itineraries[0].segments[0].departure.gate}</p>
-          <p class="card-text">Price: ${flight.price.total}</p>
-          <button class="btn btn-primary add-flight-to-trip" data-flight='${JSON.stringify(flight)}'>Add to Trip</button>
-        `;
+          var flightDetails = '';
 
+          flight.itineraries[0].segments.forEach((segment, index) => {
+            var departureDate = new Date(segment.departure.at);
+            var arrivalDate = new Date(segment.arrival.at);
+
+            flightDetails += `
+              <h5 class="card-title">${segment.carrierCode} ${segment.number}</h5>
+              <p class="card-text">Departure: ${departureDate.toLocaleString()}</p>
+              <p class="card-text">Arrival: ${arrivalDate.toLocaleString()}</p>
+              <p class="card-text">Terminal: ${segment.departure.terminal || 'N/A'}</p>
+              <p class="card-text">Gate: ${segment.departure.gate || 'N/A'}</p>
+              ${index < flight.itineraries[0].segments.length - 1 ? '<hr>' : ''}
+            `;
+          });
+
+          flightDetails += `
+            <p class="card-text">Price: ${flight.price.total}</p>
+            <button class="btn btn-primary add-flight-to-trip" data-flight='${JSON.stringify(flight)}'>Add to Trip</button>
+          `;
 
           flightCardBody.innerHTML = flightDetails;
           flightCard.appendChild(flightCardBody);
@@ -312,6 +322,7 @@ function searchFlightOffers(accessToken, originCode, destinationCode, departureD
       flightsContainer.innerHTML = '<p class="text-center">An error occurred while searching for flights.</p>';
     });
 }
+
 
 
 
