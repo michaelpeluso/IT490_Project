@@ -1,3 +1,4 @@
+
 function initAutocomplete() {
   var searchInput = document.getElementById('search-area');
   var autocomplete = new google.maps.places.Autocomplete(searchInput);
@@ -373,11 +374,12 @@ async function searchHotels(latitude, longitude) {
     }
 
     const hotelListData = await hotelListResponse.json();
-    const hotelIds = hotelListData.data.slice(0, 25).map(hotel => hotel.hotelId);
+    const hotelIds = hotelListData.data.map(hotel => hotel.hotelId);
+    console.log("HOTEL IDS ", hotelIds)
 
     searchHotelOffers(latitude, longitude, hotelIds);
   } catch (error) {
-    console.error('Error searching hotels:', error.message);
+    console.error('Error searching hotels:', error);
   }
 }
 
@@ -389,26 +391,17 @@ async function searchHotelOffers(latitude, longitude, hotelIds) {
     const checkOutDate = document.getElementById('check-out-date').value || getDefaultCheckOutDate();
     const currency = 'USD';
 
-    // Limit the number of hotel IDs to the first 25 if there are more than 100
-    const limitedHotelIds = hotelIds.length > 100 ? hotelIds.slice(0, 25) : hotelIds;
-    console.log("HOTEL ID LENGTH", limitedHotelIds.length);
-    console.log("HOTEL IDS: ", limitedHotelIds)
-    const hotelOffersResponse = await fetch(`https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=${limitedHotelIds.join(',')}&adults=${guests}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&currency=${currency}`, {
+    const hotelOffersResponse = await fetch(`https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=${hotelIds.join(',')}&adults=${guests}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&currency=${currency}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }
     });
-    console.log(hotelOffersResponse.json())
+
     if (!hotelOffersResponse.ok) {
-      throw new Error('Failed to retrieve hotel offers', hotelOffersResponse.error);
+      throw new Error('Failed to retrieve hotel offers');
     }
 
-    let hotelOffersData;
-    try {
-    hotelOffersData = await hotelOffersResponse.json();}
-    catch(err){
-      throw new Error('Error: ', err)
-    }
+    const hotelOffersData = await hotelOffersResponse.json();
     console.log("HOTEL OFFERS DATA: ", hotelOffersData);
     console.log("HOTEL OFFERS DATA: ", JSON.stringify(hotelOffersData, null, 2));
 
@@ -418,7 +411,6 @@ async function searchHotelOffers(latitude, longitude, hotelIds) {
     console.error('Error searching hotel offers:', error);
   }
 }
-
 
 
 function displayHotels(hotelOffers) {
@@ -451,10 +443,10 @@ function displayHotels(hotelOffers) {
             <div class="hotel-checkout"><strong>Check-out:</strong> ${formatDate(offer.checkOutDate)}</div>
             <div class="hotel-guests">Guests: ${offer.guests.adults}</div>
             <i class="fas fa-plus-circle add-to-favorites" data-hotel='${JSON.stringify(hotelOffer)}'></i>
+            <button class="book-now" data-hotel='${JSON.stringify(hotelOffer)}'>Book Now</button>
           </div>
         `;
         hotelsContainer.appendChild(hotelRow);
-        //test
       }
     });
   });
@@ -464,6 +456,33 @@ function displayHotels(hotelOffers) {
   for (let i = 0; i < addToFavoritesButtons.length; i++) {
     addToFavoritesButtons[i].addEventListener('click', addHotelToFavorites);
   }
+
+  const bookNowButtons = document.getElementsByClassName('book-now');
+  for (let i = 0; i < bookNowButtons.length; i++) {
+    bookNowButtons[i].addEventListener('click', handleBookNowClick);
+  }
+}
+
+function handleBookNowClick() {
+  const hotelOfferData = JSON.parse(this.getAttribute('data-hotel'));
+  const hotel = hotelOfferData.hotel;
+  const offer = hotelOfferData.offers[0];
+
+  const bookingData = {
+    hotelId: hotel.hotelId,
+    hotelName: hotel.name,
+    checkInDate: offer.checkInDate,
+    checkOutDate: offer.checkOutDate,
+    numGuests: offer.guests.adults,
+    price: offer.price.total,
+    currency: offer.price.currency
+  };
+
+  // Store the booking data in the browser's local storage
+  localStorage.setItem('bookingData', JSON.stringify(bookingData));
+
+  // Open the booking.html page in a new window
+  window.open('./booking_page/booking.html', '_blank');
 }
 
 function formatDate(dateString) {
