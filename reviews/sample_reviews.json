@@ -1,0 +1,23 @@
+[
+    {
+        "user_id": "12345",
+        "service_id": "123456",
+        "rating_value": "4",
+        "rating_title": "Great but not perfect",
+        "rating_body": "blah blah blah"
+    },
+    {
+        "user_id": "23456",
+        "service_id": "234567",
+        "rating_value": "3",
+        "rating_title": "could be better",
+        "rating_body": "blah blah blah"
+    },
+    {
+        "user_id": "34567",
+        "service_id": "345678",
+        "rating_value": "2",
+        "rating_title": "not good",
+        "rating_body": "blah blah blah"
+    }
+]
