@@ -373,12 +373,11 @@ async function searchHotels(latitude, longitude) {
     }
 
     const hotelListData = await hotelListResponse.json();
-    const hotelIds = hotelListData.data.map(hotel => hotel.hotelId);
-    console.log("HOTEL IDS ", hotelIds)
+    const hotelIds = hotelListData.data.slice(0, 25).map(hotel => hotel.hotelId);
 
     searchHotelOffers(latitude, longitude, hotelIds);
   } catch (error) {
-    console.error('Error searching hotels:', error);
+    console.error('Error searching hotels:', error.message);
   }
 }
 
@@ -390,17 +389,26 @@ async function searchHotelOffers(latitude, longitude, hotelIds) {
     const checkOutDate = document.getElementById('check-out-date').value || getDefaultCheckOutDate();
     const currency = 'USD';
 
-    const hotelOffersResponse = await fetch(`https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=${hotelIds.join(',')}&adults=${guests}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&currency=${currency}`, {
+    // Limit the number of hotel IDs to the first 25 if there are more than 100
+    const limitedHotelIds = hotelIds.length > 100 ? hotelIds.slice(0, 25) : hotelIds;
+    console.log("HOTEL ID LENGTH", limitedHotelIds.length);
+    console.log("HOTEL IDS: ", limitedHotelIds)
+    const hotelOffersResponse = await fetch(`https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=${limitedHotelIds.join(',')}&adults=${guests}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&currency=${currency}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }
     });
-
+    console.log(hotelOffersResponse.json())
     if (!hotelOffersResponse.ok) {
-      throw new Error('Failed to retrieve hotel offers');
+      throw new Error('Failed to retrieve hotel offers', hotelOffersResponse.error);
     }
 
-    const hotelOffersData = await hotelOffersResponse.json();
+    let hotelOffersData;
+    try {
+    hotelOffersData = await hotelOffersResponse.json();}
+    catch(err){
+      throw new Error('Error: ', err)
+    }
     console.log("HOTEL OFFERS DATA: ", hotelOffersData);
     console.log("HOTEL OFFERS DATA: ", JSON.stringify(hotelOffersData, null, 2));
 
@@ -410,6 +418,7 @@ async function searchHotelOffers(latitude, longitude, hotelIds) {
     console.error('Error searching hotel offers:', error);
   }
 }
+
 
 
 function displayHotels(hotelOffers) {
