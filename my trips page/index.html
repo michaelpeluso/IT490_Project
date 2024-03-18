@@ -166,17 +166,70 @@
         </div>
         <div class="card">
           <div class="card-header" id="hotelsHeading">
-           <h2 class="mb-0">
-              <button class="btn btn-link dropdown-toggle collapsed" type="button" data-toggle="collapse" data-target="#hotelsCollapse" aria-expanded="false" aria-controls="hotelsCollapse">                <span class="section-title">Nearby Hotels</span>
+            <h2 class="mb-0">
+              <button class="btn btn-link dropdown-toggle collapsed" type="button" data-toggle="collapse" data-target="#hotelsCollapse" aria-expanded="false" aria-controls="hotelsCollapse">
+                <span class="section-title">Nearby Hotels</span>
               </button>
             </h2>
-         </div>
-       <div id="hotelsCollapse" class="collapse" aria-labelledby="hotelsHeading" data-parent="#resultsAccordion">
+          </div>
+          <div id="hotelsCollapse" class="collapse" aria-labelledby="hotelsHeading" data-parent="#resultsAccordion">
             <div class="card-body">
+              <div class="hotel-filters">
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="guests-input"><i class="fas fa-user"></i></label>
+                      <input type="number" id="guests-input" class="form-control" min="1" value="2">
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="check-in-date"><i class="fas fa-calendar-alt"></i></label>
+                      <input type="date" id="check-in-date" class="form-control">
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="check-out-date"><i class="fas fa-calendar-alt"></i></label>
+                      <input type="date" id="check-out-date" class="form-control">
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="price-filter"><i class="fas fa-dollar-sign"></i></label>
+                      <select id="price-filter" class="form-control">
+                        <option value="">All</option>
+                        <option value="0-100">$0 - $100</option>
+                        <option value="101-200">$101 - $200</option>
+                        <option value="201-300">$201 - $300</option>
+                        <option value="301-400">$301 - $400</option>
+                        <option value="401-500">$401 - $500</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="rating-filter"><i class="fas fa-star"></i></label>
+                      <select id="rating-filter" class="form-control">
+                        <option value="">All</option>
+                        <option value="1">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                        <option value="5">5</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-primary" onclick="searchArea();">Search Hotels</button>
+                  </div>
+                </div>
+              </div>
               <div id="hotels-container"></div>
             </div>
           </div>
-    </div>
+        </div>
+        
         <div class="card">
           <div class="card-header" id="flightsHeading">
             <h2 class="mb-0">
