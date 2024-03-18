@@ -403,7 +403,7 @@ async function searchHotelOffers(latitude, longitude, hotelIds) {
 
     const hotelOffersData = await hotelOffersResponse.json();
     console.log("HOTEL OFFERS DATA: ", hotelOffersData);
-    console.log("HOTEL OFFERS DATA: ", JSON.stringify(hotelOffersData, null, 2));
+    //console.log("HOTEL OFFERS DATA: ", JSON.stringify(hotelOffersData, null, 2));
 
     allHotels = hotelOffersData.data; // Store all the fetched hotel offers
     displayHotels(allHotels);
@@ -464,6 +464,7 @@ function displayHotels(hotelOffers) {
 }
 
 function handleBookNowClick() {
+  console.log("Book Now clicked");
   const hotelOfferData = JSON.parse(this.getAttribute('data-hotel'));
   const hotel = hotelOfferData.hotel;
   const offer = hotelOfferData.offers[0];
@@ -559,3 +560,20 @@ function getDefaultCheckOutDate() {
 
 // Initialize the autocomplete functionality when the page loads
 google.maps.event.addDomListener(window, 'load', initAutocomplete);
+
+document.addEventListener('DOMContentLoaded', function() {
+  const hotelsContainer = document.getElementById('hotels-container');
+
+  hotelsContainer.addEventListener('click', function(event) {
+    const target = event.target;
+
+    if (target.classList.contains('book-now')) {
+      console.log("Book Now clicked");
+      const hotelOfferData = JSON.parse(target.getAttribute('data-hotel'));
+      // The rest of your booking logic here...
+
+      // Example: Opening a new window/tab
+      window.open('./booking_page/booking.html', '_blank');
+    }
+  });
+});
