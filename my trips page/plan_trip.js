@@ -42,9 +42,28 @@ function searchArea() {
         const accessToken = await fetchAccessToken();
         const nearbyAirports = await fetchNearbyAirports(accessToken, latitude, longitude);
         console.log('Nearby Airports:', nearbyAirports);
-        
-        const nearbyStartingAirports = await fetchNearbyAirports(accessToken, latitude, longitude);
-        console.log('Nearby Starting Airports:', nearbyStartingAirports);
+
+        // Use the first nearby airport as the destination
+        const destinationCode = nearbyAirports[0];
+
+        // Geocode the starting location to get the latitude and longitude
+        geocoder.geocode({ address: startingLocation }, async function(startingResults, startingStatus) {
+          if (startingStatus === google.maps.GeocoderStatus.OK) {
+            var startingLatitude = startingResults[0].geometry.location.lat();
+            var startingLongitude = startingResults[0].geometry.location.lng();
+
+            const nearbyStartingAirports = await fetchNearbyAirports(accessToken, startingLatitude, startingLongitude);
+            console.log('Nearby Starting Airports:', nearbyStartingAirports);
+
+            // Use the first nearby starting airport as the origin
+            const originCode = nearbyStartingAirports[0];
+
+            // Search for flights using the origin and destination codes
+            searchFlights(originCode, destinationCode);
+          } else {
+            console.error('Geocoding error for starting location:', startingStatus);
+          }
+        });
       } catch (error) {
         console.error('Error fetching nearby airports:', error);
       }
@@ -56,6 +75,7 @@ function searchArea() {
     }
   });
 }
+
 
 
 function searchNearbyRestaurants(latitude, longitude) {
@@ -135,9 +155,7 @@ function removeRestaurantFromTrip() {
   tripItem.remove();
 }
 
-function searchFlights() {
-  var origin = document.getElementById('starting-location').value;
-  var destination = document.getElementById('search-area').value;
+function searchFlights(originCode, destinationCode) {
   var departureDate = document.getElementById('departure-date').value;
 
   // Validate the departure date
@@ -168,26 +186,19 @@ function searchFlights() {
     .then(response => response.json())
     .then(data => {
       var accessToken = data.access_token;
-      // Convert origin and destination to IATA codes using Airport & City Search API
-      convertToIATACodes(accessToken, origin, destination)
-        .then(({ originCode, destinationCode }) => {
-          // Step 3: Use the Access Token and IATA codes to search for flights
-          searchFlightOffers(accessToken, originCode, destinationCode, departureDate);
-        })
-        .catch(error => {
-          console.error('Error converting to IATA codes:', error);
-          var flightsContainer = document.getElementById('flights-container');
-          flightsContainer.innerHTML = '<p class="text-center">An error occurred while converting to IATA codes.</p>';
-        });
+      // Step 3: Use the Access Token and IATA codes to search for flights
+      searchFlightOffers(accessToken, originCode, destinationCode, departureDate);
     })
     .catch(error => {
       console.error('Error getting access token:', error);
-      var flightsContainer = document.getElementById('flights-container');      flightsContainer.innerHTML = '<p class="text-center">An error occurred while getting the access token.</p>';
+      var flightsContainer = document.getElementById('flights-container');
+      flightsContainer.innerHTML = '<p class="text-center">An error occurred while getting the access token.</p>';
     });
 }
 
 async function fetchNearbyAirports(accessToken, latitude, longitude) {
-  const airportsResponse = await fetch(`https://test.api.amadeus.com/v1/reference-data/locations/airports?latitude=${latitude}&longitude=${longitude}`, {
+  const radius = 100; // Specify the search radius in kilometers
+  const airportsResponse = await fetch(`https://test.api.amadeus.com/v1/reference-data/locations/airports?latitude=${latitude}&longitude=${longitude}&radius=${radius}`, {
     headers: {
       'Authorization': `Bearer ${accessToken}`
     }
@@ -200,6 +211,7 @@ async function fetchNearbyAirports(accessToken, latitude, longitude) {
   const airportsData = await airportsResponse.json();
   return airportsData.data.map(airport => airport.iataCode);
 }
+
 
 
 
@@ -270,12 +282,15 @@ function searchFlightOffers(accessToken, originCode, destinationCode, departureD
           flightCardBody.className = 'card-body';
 
           var flightDetails = `
-            <h5 class="card-title">${flight.itineraries[0].segments[0].carrierCode}</h5>
-            <p class="card-text">Departure: ${flight.itineraries[0].segments[0].departure.at}</p>
-            <p class="card-text">Arrival: ${flight.itineraries[0].segments[flight.itineraries[0].segments.length - 1].arrival.at}</p>
-            <p class="card-text">Price: ${flight.price.total}</p>
-            <button class="btn btn-primary add-flight-to-trip" data-flight='${JSON.stringify(flight)}'>Add to Trip</button>
-          `;
+          <h5 class="card-title">${flight.itineraries[0].segments[0].carrierCode} ${flight.itineraries[0].segments[0].number}</h5>
+          <p class="card-text">Departure: ${flight.itineraries[0].segments[0].departure.at}</p>
+          <p class="card-text">Arrival: ${flight.itineraries[0].segments[flight.itineraries[0].segments.length - 1].arrival.at}</p>
+          <p class="card-text">Terminal: ${flight.itineraries[0].segments[0].departure.terminal}</p>
+          <p class="card-text">Gate: ${flight.itineraries[0].segments[0].departure.gate}</p>
+          <p class="card-text">Price: ${flight.price.total}</p>
+          <button class="btn btn-primary add-flight-to-trip" data-flight='${JSON.stringify(flight)}'>Add to Trip</button>
+        `;
+
 
           flightCardBody.innerHTML = flightDetails;
           flightCard.appendChild(flightCardBody);
