@@ -6,17 +6,48 @@ function initAutocomplete() {
   var startingAutocomplete = new google.maps.places.Autocomplete(startingInput);
 }
 
+const apiKey = 'qhyCpeOEeXXL7NAtF7PowMPR3HBP8IcJ';
+const apiSecret = '6SMREPe2c5oBPY9O';
+
+async function fetchAccessToken() {
+  const tokenResponse = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `grant_type=client_credentials&client_id=${encodeURIComponent(apiKey)}&client_secret=${encodeURIComponent(apiSecret)}`
+  });
+
+  if (!tokenResponse.ok) {
+    throw new Error('Failed to retrieve access token');
+  }
+
+  const { access_token } = await tokenResponse.json();
+  return access_token;
+}
+
 function searchArea() {
   var searchInput = document.getElementById('search-area').value;
   var startingLocation = document.getElementById('starting-location').value;
 
   // Geocode the search input to get the latitude and longitude
   var geocoder = new google.maps.Geocoder();
-  geocoder.geocode({ address: searchInput }, function(results, status) {
+  geocoder.geocode({ address: searchInput }, async function(results, status) {
     if (status === google.maps.GeocoderStatus.OK) {
       var location = results[0].geometry.location;
       var latitude = location.lat();
       var longitude = location.lng();
+
+      try {
+        const accessToken = await fetchAccessToken();
+        const nearbyAirports = await fetchNearbyAirports(accessToken, latitude, longitude);
+        console.log('Nearby Airports:', nearbyAirports);
+        
+        const nearbyStartingAirports = await fetchNearbyAirports(accessToken, latitude, longitude);
+        console.log('Nearby Starting Airports:', nearbyStartingAirports);
+      } catch (error) {
+        console.error('Error fetching nearby airports:', error);
+      }
 
       // Search for nearby restaurants
       searchNearbyRestaurants(latitude, longitude);
@@ -25,6 +56,7 @@ function searchArea() {
     }
   });
 }
+
 
 function searchNearbyRestaurants(latitude, longitude) {
   var service = new google.maps.places.PlacesService(document.createElement('div'));
@@ -153,6 +185,23 @@ function searchFlights() {
       var flightsContainer = document.getElementById('flights-container');      flightsContainer.innerHTML = '<p class="text-center">An error occurred while getting the access token.</p>';
     });
 }
+
+async function fetchNearbyAirports(accessToken, latitude, longitude) {
+  const airportsResponse = await fetch(`https://test.api.amadeus.com/v1/reference-data/locations/airports?latitude=${latitude}&longitude=${longitude}`, {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+
+  if (!airportsResponse.ok) {
+    throw new Error('Failed to retrieve airports data');
+  }
+
+  const airportsData = await airportsResponse.json();
+  return airportsData.data.map(airport => airport.iataCode);
+}
+
+
 
 function convertToIATACodes(accessToken, origin, destination) {
   var baseUrl = 'https://test.api.amadeus.com/v1';
