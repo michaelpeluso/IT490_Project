@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Item Reviews</title>
+        <title>My Reviews</title>
         <style>
             .grid-container {
                 display: grid;
@@ -63,18 +63,21 @@
     </head>
     <body>
         <h1>My Reviews</h1>
+
+        <!-- reviews -->
         <div id="container">
             <div id="reviews-container" class="grid-container"></div>
         </div>
 
-        <!-- Modal -->
+        <!-- modal -->
         <div id="modal" class="modal">
             <div class="modal-content">
                 <span id="modal-review"></span>
             </div>
         </div>
 
+        <!-- scripts -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script src="handle_reviews.js"></script>
+        <script src="fetch_reviews.js"></script>
     </body>
 </html>
