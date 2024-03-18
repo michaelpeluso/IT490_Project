@@ -14,16 +14,16 @@ if ($conn->connect_error) {
 }
 
 // Retrieve the restaurant data from the AJAX request
-$accomidation_id = $_POST['service_id'];
-$rating = $_POST['rating'];
-$title = $_POST['title'];
-$body = $_POST['body'];
+$service_id = $_POST['service_id'];
+$review_rating = $_POST['review_rating'];
+$review_body = $_POST['review_body'];
+$review_title = $_POST['review_date'];
 
 // Get the user ID (assuming you have a logged-in user)
 $user_id = 1; // Replace with the actual user ID
 
 // Prepare and execute the SQL query to insert the restaurant data into the database
-$stmt = $conn->prepare("INSERT INTO reviews (user_id, service_id, rating_value, rating_title, rating_body) VALUES (?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO reviews (user_id, service_id, service_type, review_rating, review_body, review_date) VALUES (?, ?, ?, ?, ?)");
 $stmt->bind_param("issd", $user_id, $name, $address, $rating);
 $stmt->execute();
 

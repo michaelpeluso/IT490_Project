@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Item Reviews</title>
+        <style>
+            .grid-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 20px;
+            }
+
+            .review-cell {
+                border: 1px solid #ccc;
+                padding: 20px;
+                max-height: 15rem;
+            }
+            .star {
+                width: 10px;
+                height: 10px;
+                display: inline-block;
+                background-color: transparent;
+                border: 2px solid black;
+                border-radius: 100%;
+            }
+
+            @media screen and (max-width: 600px) {
+                .grid-container {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>My Reviews</h1>
+        <div id="container">
+            <div id="reviews-container" class="grid-container"></div>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="handle_reviews.js"></script>
+    </body>
+</html>

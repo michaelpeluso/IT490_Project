@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit A Review</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div id="itemReviews"></div>
-    <form id="reviewForm" action="post_review.php" method="post">
-        <div>
-	        <label for="rating">Rating:</label>
-	        <div style="display=flex;">
-				<input type="radio" id="rating1" name="rating" value="1">
-				<label for="rating1">1</label><br>
-				<input type="radio" id="rating2" name="rating" value="2">
-				<label for="rating2">2</label><br>
-				<input type="radio" id="rating3" name="rating" value="3">
-				<label for="rating3">3</label><br>
-				<input type="radio" id="rating4" name="rating" value="4">
-				<label for="rating4">4</label><br>
-				<input type="radio" id="rating5" name="rating" value="5">
-				<label for="rating5">5</label><br>
-		    </div>
-        </div>
-        
-        </br>
-        
-        <div style="display: flex; flex-direction: column">
-	        <label for="reviewText">Review:</label>
-        	<textarea id="reviewText" name="reviewText"></textarea>
-        </div>
-        
-        </br>
-        
-        <button type="submit">Submit Review</button>
-    </form>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Submit A Review</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <div id="itemReviews"></div>
+        <form id="reviewForm" action="post_review.php" method="post">
+            <div>
+                <label for="rating">Rating:</label>
+                <div style="display: flex">
+                    <input type="radio" id="rating1" name="rating" value="1" />
+                    <label for="rating1">1</label><br />
+                    <input type="radio" id="rating2" name="rating" value="2" />
+                    <label for="rating2">2</label><br />
+                    <input type="radio" id="rating3" name="rating" value="3" />
+                    <label for="rating3">3</label><br />
+                    <input type="radio" id="rating4" name="rating" value="4" />
+                    <label for="rating4">4</label><br />
+                    <input type="radio" id="rating5" name="rating" value="5" />
+                    <label for="rating5">5</label><br />
+                </div>
+            </div>
 
-    <script src="script.js"></script>
-</body>
+            <br />
+
+            <div style="display: flex; flex-direction: column">
+                <label for="reviewText">Review:</label>
+                <textarea id="reviewText" name="reviewText"></textarea>
+            </div>
+
+            <br />
+
+            <button type="submit">Submit Review</button>
+        </form>
+
+        <script src="script.js">
+            // call submitReview() on form submission
+            document.getElementById("reviewForm").addEventListener("submit", submitReview);
+        </script>
+    </body>
 </html>
-
