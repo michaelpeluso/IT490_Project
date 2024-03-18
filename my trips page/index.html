@@ -111,8 +111,9 @@
         <label for="departure-date">Departure Date:</label>
         <input type="date" id="departure-date" class="form-control">
       </div>
-      <button type="button" class="btn btn-primary" onclick="searchFlights()">Search Flights</button>
+      <button type="button" class="btn btn-primary" onclick="searchArea(); searchFlights();">Search Flights</button>
     </form>
+ 
     <div id="search-results" class="mt-4">
       <div class="accordion" id="resultsAccordion">
         <div class="card">

@@ -20,15 +20,11 @@ function searchArea() {
 
       // Search for nearby restaurants
       searchNearbyRestaurants(latitude, longitude);
-
-      // Search for nearby flights
-      searchFlights(startingLocation, searchInput);
     } else {
       console.error('Geocoding error:', status);
     }
   });
 }
-
 
 function searchNearbyRestaurants(latitude, longitude) {
   var service = new google.maps.places.PlacesService(document.createElement('div'));
@@ -107,7 +103,18 @@ function removeRestaurantFromTrip() {
   tripItem.remove();
 }
 
-function searchFlights(origin, destination) {
+function searchFlights() {
+  var origin = document.getElementById('starting-location').value;
+  var destination = document.getElementById('search-area').value;
+  var departureDate = document.getElementById('departure-date').value;
+
+  // Validate the departure date
+  var today = new Date().toISOString().split('T')[0];
+  if (departureDate < today) {
+    alert('Please select a future departure date.');
+    return;
+  }
+
   var apiKey = 'qhyCpeOEeXXL7NAtF7PowMPR3HBP8IcJ';
   var apiSecret = '6SMREPe2c5oBPY9O';
 
@@ -129,58 +136,102 @@ function searchFlights(origin, destination) {
     .then(response => response.json())
     .then(data => {
       var accessToken = data.access_token;
-      // Step 3: Use the Access Token
-      searchFlightOffers(accessToken, origin, destination);
+      // Convert origin and destination to IATA codes using Airport & City Search API
+      convertToIATACodes(accessToken, origin, destination)
+        .then(({ originCode, destinationCode }) => {
+          // Step 3: Use the Access Token and IATA codes to search for flights
+          searchFlightOffers(accessToken, originCode, destinationCode, departureDate);
+        })
+        .catch(error => {
+          console.error('Error converting to IATA codes:', error);
+          var flightsContainer = document.getElementById('flights-container');
+          flightsContainer.innerHTML = '<p class="text-center">An error occurred while converting to IATA codes.</p>';
+        });
     })
     .catch(error => {
       console.error('Error getting access token:', error);
-      var flightsContainer = document.getElementById('flights-container');
-      flightsContainer.innerHTML = '<p class="text-center">An error occurred while getting the access token.</p>';
+      var flightsContainer = document.getElementById('flights-container');      flightsContainer.innerHTML = '<p class="text-center">An error occurred while getting the access token.</p>';
     });
 }
 
-function searchFlightOffers(accessToken, origin, destination) {
-  var url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
-  var data = {
-    originLocationCode: origin,
-    destinationLocationCode: destination,
-    departureDate: '2023-06-01',
-    adults: 1,
-    max: 5
+function convertToIATACodes(accessToken, origin, destination) {
+  var baseUrl = 'https://test.api.amadeus.com/v1';
+
+  var getIATACode = (location) => {
+    var url = `${baseUrl}/reference-data/locations?subType=CITY,AIRPORT&keyword=${encodeURIComponent(location)}`;
+
+    return fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.data && data.data.length > 0) {
+          return data.data[0].iataCode;
+        } else {
+          throw new Error(`No IATA code found for location: ${location}`);
+        }
+      });
   };
 
-  fetch(url, {
+  return Promise.all([
+    getIATACode(origin),
+    getIATACode(destination)
+  ])
+    .then(([originCode, destinationCode]) => ({
+      originCode,
+      destinationCode
+    }));
+}
+
+function searchFlightOffers(accessToken, originCode, destinationCode, departureDate) {
+  var url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
+  var params = new URLSearchParams({
+    originLocationCode: originCode,
+    destinationLocationCode: destinationCode,
+    departureDate: departureDate,
+    adults: '2',
+    max: '5'
+  });
+
+  fetch(url + '?' + params, {
     method: 'GET',
     headers: {
       'Authorization': 'Bearer ' + accessToken
-    },
-    params: data
+    }
   })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error fetching flight offers: ' + response.status);
+      }
+      return response.json();
+    })
     .then(data => {
+      console.log('Flight Offers Response:', data);
       var flightsContainer = document.getElementById('flights-container');
       flightsContainer.innerHTML = ''; // Clear previous results
 
       if (data && data.data && data.data.length > 0) {
-        var flightsHTML = '<h2 class="section-title mb-4">Available Flights</h2>';
-
         data.data.forEach(flight => {
-          flightsHTML += `
-            <div class="col-md-4 mb-4">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">${flight.itineraries[0].segments[0].carrierCode}</h5>
-                  <p class="card-text">Departure: ${flight.itineraries[0].segments[0].departure.at}</p>
-                  <p class="card-text">Arrival: ${flight.itineraries[0].segments[flight.itineraries[0].segments.length - 1].arrival.at}</p>
-                  <p class="card-text">Price: ${flight.price.total}</p>
-                  <button class="btn btn-primary add-flight-to-trip" data-flight='${JSON.stringify(flight)}'>Add to Trip</button>
-                </div>
-              </div>
-            </div>
-          `;
-        });
+          var flightCard = document.createElement('div');
+          flightCard.className = 'card mb-3';
 
-        flightsContainer.innerHTML = flightsHTML;
+          var flightCardBody = document.createElement('div');
+          flightCardBody.className = 'card-body';
+
+          var flightDetails = `
+            <h5 class="card-title">${flight.itineraries[0].segments[0].carrierCode}</h5>
+            <p class="card-text">Departure: ${flight.itineraries[0].segments[0].departure.at}</p>
+            <p class="card-text">Arrival: ${flight.itineraries[0].segments[flight.itineraries[0].segments.length - 1].arrival.at}</p>
+            <p class="card-text">Price: ${flight.price.total}</p>
+            <button class="btn btn-primary add-flight-to-trip" data-flight='${JSON.stringify(flight)}'>Add to Trip</button>
+          `;
+
+          flightCardBody.innerHTML = flightDetails;
+          flightCard.appendChild(flightCardBody);
+          flightsContainer.appendChild(flightCard);
+        });
 
         // Attach event listeners to "Add to Trip" buttons for flights
         var addFlightButtons = document.getElementsByClassName('add-flight-to-trip');
@@ -203,10 +254,10 @@ function searchFlightOffers(accessToken, origin, destination) {
 
 function addFlightToTrip() {
   var flightData = JSON.parse(this.getAttribute('data-flight'));
-  var airline = flightData.airline;
-  var departureTime = flightData.departure_time;
-  var arrivalTime = flightData.arrival_time;
-  var price = flightData.price;
+  var airline = flightData.itineraries[0].segments[0].carrierCode;
+  var departureTime = flightData.itineraries[0].segments[0].departure.at;
+  var arrivalTime = flightData.itineraries[0].segments[flightData.itineraries[0].segments.length - 1].arrival.at;
+  var price = flightData.price.total;
 
   // Create a new trip item element for the flight
   var tripItem = document.createElement('div');
