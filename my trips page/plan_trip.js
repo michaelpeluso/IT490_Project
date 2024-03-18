@@ -445,6 +445,7 @@ function displayHotels(hotelOffers) {
           </div>
         `;
         hotelsContainer.appendChild(hotelRow);
+        //test
       }
     });
   });
