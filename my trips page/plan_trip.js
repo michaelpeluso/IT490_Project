@@ -443,8 +443,8 @@ function displayHotels(hotelOffers) {
             <div class="hotel-checkout"><strong>Check-out:</strong> ${formatDate(offer.checkOutDate)}</div>
             <div class="hotel-guests">Guests: ${offer.guests.adults}</div>
             <i class="fas fa-plus-circle add-to-favorites" data-hotel='${JSON.stringify(hotelOffer)}'></i>
-            <button class="book-now" data-hotel='${JSON.stringify(hotelOffer)}'>Book Now</button>
-          </div>
+            <button class="btn btn-primary book-now" data-hotel='${JSON.stringify(hotelOffer)}'>Book Now</button>
+            </div>
         `;
         hotelsContainer.appendChild(hotelRow);
       }
