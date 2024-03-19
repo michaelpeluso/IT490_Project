@@ -26,7 +26,7 @@ function displayReviews(reviews) {
     reviewsContainer.innerHTML = ""; // Clear previous reviews
 
     reviews.forEach((review) => {
-        const reviewElement = document.createElement("div");
+        const reviewElement = document.createElement("div"); 
         reviewElement.classList.add("review");
 
         // add read more to long reviews
