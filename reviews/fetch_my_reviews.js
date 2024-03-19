@@ -22,7 +22,7 @@ function fetchReviews() {
 }
 
 // Function to display reviews
-function displayReviews() {
+function displayReviews(reviews) {
     reviewsContainer.innerHTML = ""; // Clear previous reviews
 
     reviews.forEach((review) => {
