@@ -8,6 +8,9 @@ include('condb.php');
 global $SODIUM_KEY_hex;
 $SODIUM_KEY_hex = "316d84ecd4bfd5c19ff9b3ad48c2780d8553a23a60a22d1e14c583decbd6fea9";
 
+//
+// DO VALIDATE
+//
 function doValidate($key){
     $mydb = new mysqli('127.0.0.1','register','pwd','IT490');
     if ($mydb->errno != 0)	
@@ -39,6 +42,9 @@ function doValidate($key){
 
 }
 
+//
+// DO LOGIN
+//
 function doLogin($password, $email)
 {
     //converting secret key from hex to binary
@@ -149,6 +155,9 @@ function doLogin($password, $email)
     
 }
 
+//
+// DO REGISTER
+//
 function doRegister($password,$email,$firstName,$lastName)
 {
 
@@ -234,19 +243,17 @@ function doRegister($password,$email,$firstName,$lastName)
     
 }
 
-function getUserReviews($auth_key) {    
-    // connecting to database
-    $mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
-    
-    // error hgandling: check for valid connection
-    if ($mydb->errno != 0) {
-		echo "Failed to establish database connection: ". $mydb->error . PHP_EOL;
-		return array(
-		'status'=> "error",
-		'error'=> "Failed to establish database connection.");
-		exit(0);
-    }
-    echo "Successfully connected to database".PHP_EOL;
+//
+// FETCH USER REVIEWS
+//
+function fetchUserReviews($auth_key) {
+	// error handling: check auth key
+	if (!isset($auth_key)) {
+		returnError("No auth key provided");
+	}
+
+    // connect to database
+    $mydb = mysqliConnection();
     
     // query the database
     $query_user = "select user_id from reviews where authkey = '".$auth_key."';";
@@ -254,12 +261,7 @@ function getUserReviews($auth_key) {
     
     // error handling: check if auth key record exists
     if ($response_user->num_rows == 0) {
-		echo "No user with given auth key: ". $mydb->error . PHP_EOL;
-        return array(
-            'status' => "error",
-            'error' => "No user with given auth key."
-        );
-        exit(0);
+		returnError("No user with given auth key");
     }
 
     // fetch the user data
@@ -274,12 +276,7 @@ function getUserReviews($auth_key) {
 	
 	// error handling: check for valid response
 	if (!$response_reviews) {
-		echo "Failed to retrieve records from table 'reviews': ". $mydb->error . PHP_EOL;
-		return array(
-			'status'=> "error",
-			'error'=> "Failed to retrieve records from table 'reviews'."
-		);
-		exit(0);
+		returnError("Failed to retrieve records from table 'reviews'");
 	}
 	
 	// pack up data to return
@@ -297,6 +294,37 @@ function getUserReviews($auth_key) {
     return $review_data
 }
 
+//
+// FETCH SERVICE REVIEWS
+//
+function fetchServiceReviews($service_id) {    
+    // connect to database
+    $mydb = mysqliConnection();
+
+    // fetch service reviews
+	$query_reviews = "SELECT * FROM reviews WHERE service_id == " . $service_id;
+    $response_reviews = $mydb->query($query_reviews);
+	
+	// error handling: check for valid response
+	if (!$response_reviews) {
+		returnError("Failed to retrieve records from table 'reviews'");
+	}
+	
+	// pack up data to return
+    $review_data = array(
+		'status' => 'ok',
+	);
+    while ($row = $response_reviews->fetch_assoc()) {
+        $review_data[] = $row;
+    }
+
+    // Return the reviews array
+    return $review_data
+}
+
+//
+// REQUEST PROCESSOR
+//
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -309,19 +337,48 @@ function requestProcessor($request)
   {
     case "login":
       return doLogin($request['password'], $request['email']);
+      
     case "register":
     	return doRegister($request['password'], $request['email'], $request['first_name'], $request['last_name'] );
+    	
     case "validate_session":
       return doValidate($request['accesskey']);
-  case "get_user_reviews":
-      return getUserReviews($request['auth_key']);
-  case "get_service_reviews":
-      // TODO
-      // return getData($request['accesskey']);
+      
+	case "get_user_reviews":
+      return fetchUserReviews($request['auth_key']);
+      
+  	case "get_service_reviews":
+      return fetchServiceReviews($request['service_id']);
+    
     default:
     	return array("returnCode" => '1', 'message' => "ERROR: unsupported message type", 'status'=>'error');
   }
-  return array("returnCode" => '0', 'message'=>"Server received request and processed");
+  return array("returnCode" => '0', 'message'=>"Server received request and processed. Unknown message type provided.");
+}
+
+//
+// RETURN ERROR
+//
+function returnError($error_description) {
+	echo $error_description . ": " . $mydb->error . PHP_EOL;
+	return array(
+	'status'=> "error",
+	'error'=> $error_description);
+	exit(0);
+}
+
+//
+// MYSQLI CONNECTION
+//
+function mysqliConnection() {
+    $mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
+    
+    // error hgandling: check for valid connection
+    if ($mydb->errno != 0) {
+		returnError("Failed to establish database connection");
+    }
+    echo "Successfully connected to database".PHP_EOL;
+    return $mydb;
 }
 
 $server = new rabbitMQServer("testRabbitMQ.ini","testServer");
