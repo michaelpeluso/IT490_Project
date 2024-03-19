@@ -57,9 +57,6 @@ function doLogin($password, $email)
     $encrypted_pass = mb_substr($decode , SODIUM_CRYPTO_SECRETBOX_NONCEBYTES, null,'8bit');
     $password = sodium_crypto_secretbox_open($encrypted_pass, $nonce, $SODIUM_KEY );
     
-    
-    
-
     // connecting to database
     $mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
 
@@ -237,6 +234,69 @@ function doRegister($password,$email,$firstName,$lastName)
     
 }
 
+function getUserReviews($auth_key) {    
+    // connecting to database
+    $mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
+    
+    // error hgandling: check for valid connection
+    if ($mydb->errno != 0) {
+		echo "Failed to establish database connection: ". $mydb->error . PHP_EOL;
+		return array(
+		'status'=> "error",
+		'error'=> "Failed to establish database connection.");
+		exit(0);
+    }
+    echo "Successfully connected to database".PHP_EOL;
+    
+    // query the database
+    $query_user = "select user_id from reviews where authkey = '".$auth_key."';";
+    $response_user = $mydb->query($query_user);
+    
+    // error handling: check if auth key record exists
+    if ($response_user->num_rows == 0) {
+		echo "No user with given auth key: ". $mydb->error . PHP_EOL;
+        return array(
+            'status' => "error",
+            'error' => "No user with given auth key."
+        );
+        exit(0);
+    }
+
+    // fetch the user data
+    $row = $response_reviews->fetch_assoc();
+    $user_id = $row['user_id'];
+    $firstName = $row['firstName'];
+    $lastName = $row['lastName'];
+
+    // fetch user reviews
+    $query_reviews = "SELECT * FROM reviews WHERE user_id = " . $user_id;
+    $response_reviews = $mydb->query($query_reviews);
+	
+	// error handling: check for valid response
+	if (!$response_reviews) {
+		echo "Failed to retrieve records from table 'reviews': ". $mydb->error . PHP_EOL;
+		return array(
+			'status'=> "error",
+			'error'=> "Failed to retrieve records from table 'reviews'."
+		);
+		exit(0);
+	}
+	
+	// pack up data to return
+    $review_data = array(
+		'status' => 'ok',
+		'firstName' => $firstName,
+		'lasttName' => $lastName,
+		'reviews' => []
+	);
+    while ($row = $response_reviews->fetch_assoc()) {
+        $review_data['reviews'][] = $row;
+    }
+
+    // Return the reviews array
+    return $review_data
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -253,6 +313,11 @@ function requestProcessor($request)
     	return doRegister($request['password'], $request['email'], $request['first_name'], $request['last_name'] );
     case "validate_session":
       return doValidate($request['accesskey']);
+  case "get_user_reviews":
+      return getUserReviews($request['auth_key']);
+  case "get_service_reviews":
+      // TODO
+      // return getData($request['accesskey']);
     default:
     	return array("returnCode" => '1', 'message' => "ERROR: unsupported message type", 'status'=>'error');
   }
