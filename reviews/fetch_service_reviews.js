@@ -24,19 +24,7 @@ function fetchReviews() {
 // Function to display reviews
 function displayReviews(reviews) {
     reviewsContainer.innerHTML = ""; // Clear previous reviews
-	
-	
-	reviews = [
-				{
-					'user_id' : '1234',
-					'service_id' : '1234',
-					'review_rating' : '4',
-					'review_body' : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vestibulum lectus mauris ultrices eros in cursus turpis massa tincidunt. Arcu ac tortor dignissim convallis aenean et tortor. Mauris in aliquam sem fringilla ut morbi tincidunt augue. In hendrerit gravida rutrum quisque non tellus orci ac auctor. Cursus euismod quis viverra nibh cras. Vel eros donec ac odio tempor orci dapibus ultrices in. Netus et malesuada fames ac turpis egestas integer eget aliquet. Eros in cursus turpis massa tincidunt. Sed euismod nisi porta lorem mollis aliquam. Tortor at risus viverra adipiscing. Eget sit amet tellus cras adipiscing enim. Felis eget velit aliquet sagittis id consectetur purus ut faucibus. Sed lectus vestibulum mattis ullamcorper. Aliquet risus feugiat in ante metus. Porttitor lacus luctus accumsan tortor posuere ac ut consequat. Nisl suscipit adipiscing bibendum est. Et ligula ullamcorper malesuada proin libero. Enim facilisis gravida neque convallis a.',
-					'review_date' : '2/12/2024'
-				}
-			];
-			
-			
+
     reviews.forEach((review) => {
         const reviewElement = document.createElement("div"); 
         reviewElement.classList.add("review");
@@ -105,7 +93,7 @@ const reviewsContainer = document.getElementById("reviews-container");
 
 // fetch reviews when the page loads
 document.addEventListener("DOMContentLoaded", function () {
-    displayReviews("asdfr");
+    fetchReviews();
 });
 
 // close modal when click off
