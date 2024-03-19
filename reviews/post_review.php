@@ -10,9 +10,11 @@ session_start();
 $auth_key = $_SESSION['key'];
 
 $service_id = isset($_GET['service_id']) ? $_GET['service_id'] : null;
-$service_id = isset($_GET['review_rating']) ? $_GET['review_rating'] : null;
-$service_id = isset($_GET['review_body']) ? $_GET['review_body'] : null;
-$service_id = isset($_GET['review_date']) ? $_GET['review_date'] : null;
+
+$review_rating = $_POST['rating']; // serialized from form
+$review_body = $_POST['reviewText'];
+
+$review_date = date("m-d-Y");
 
 // pack data for request
 $request = array(

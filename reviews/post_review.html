@@ -67,9 +67,15 @@
             
             function postReview() {
             	if (validateForm()) {
+            		
+            		// serialize data
+            		var formData = $("#reviewForm").serialize();
+            	
+            		// make php request
 					$.ajax({
 						url: "post_review.php",
 						type: "POST",
+						data: formData,
 						success: function (data) {
 							// display data to user
 							displayReviews(data);
