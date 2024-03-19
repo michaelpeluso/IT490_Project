@@ -1,42 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Book a Hotel</title>
-    <!-- Include your CSS and other head elements -->
+  <title>Book a Hotel</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .booking-info {
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+    .booking-info h2 {
+      margin-bottom: 20px;
+    }
+    .booking-info p {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Book a Hotel</h1>
-    <form action="process_booking.php" method="post">
-        <input type="hidden" name="hotel_id" id="hotel_id">
-        <label for="hotel_name">Hotel:</label>
-        <input type="text" name="hotel_name" id="hotel_name" readonly>
-        <br>
-        <label for="check_in_date">Check-in Date:</label>
-        <input type="date" name="check_in_date" id="check_in_date" required>
-        <br>
-        <label for="check_out_date">Check-out Date:</label>
-        <input type="date" name="check_out_date" id="check_out_date" required>
-        <br>
-        <label for="num_guests">Number of Guests:</label>
-        <input type="number" name="num_guests" id="num_guests" min="1" required>
-        <br>
-        <label for="price">Price:</label>
-        <input type="text" name="price" id="price" readonly>
-        <br>
-        <input type="submit" value="Confirm Booking">
-    </form>
+  <div class="container">
+    <div class="booking-info">
+      <h2 class="text-center mb-4">Booking Confirmation</h2>
+      <p><strong>Hotel:</strong> <span id="hotel-name"></span></p>
+      <p><strong>Check-in Date:</strong> <span id="check-in-date"></span></p>
+      <p><strong>Check-out Date:</strong> <span id="check-out-date"></span></p>
+      <p><strong>Number of Guests:</strong> <span id="num-guests"></span></p>
+      <p><strong>Price:</strong> <span id="price"></span></p>
+      <p><strong>Address:</strong> <span id="address"></span></p>
+    </div>
+  </div>
 
-    <script>
-        // Retrieve the booking data from localStorage
-        const bookingData = JSON.parse(localStorage.getItem('bookingData'));
+  <script>
+    // Retrieve the booking data from localStorage
+    const bookingData = JSON.parse(localStorage.getItem('bookingData'));
 
-        // Pre-fill the form fields with the booking data
-        document.getElementById('hotel_id').value = bookingData.hotelId;
-        document.getElementById('hotel_name').value = bookingData.hotelName;
-        document.getElementById('check_in_date').value = bookingData.checkInDate;
-        document.getElementById('check_out_date').value = bookingData.checkOutDate;
-        document.getElementById('num_guests').value = bookingData.numGuests;
-        document.getElementById('price').value = `${bookingData.currency} ${bookingData.price}`;
-    </script>
+    // Display the booking information
+    if (bookingData) {
+      document.getElementById('hotel-name').textContent = bookingData.hotelName;
+      document.getElementById('check-in-date').textContent = formatDate(bookingData.checkInDate);
+      document.getElementById('check-out-date').textContent = formatDate(bookingData.checkOutDate);
+      document.getElementById('num-guests').textContent = bookingData.numGuests;
+      document.getElementById('price').textContent = `${bookingData.currency} ${bookingData.price}`;
+      document.getElementById('address').textContent = bookingData.address;
+    } else {
+      console.log("Booking data not found in localStorage");
+    }
+
+    // Helper function to format the date
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return date.toLocaleDateString('en-US', options);
+    }
+  </script>
 </body>
 </html>

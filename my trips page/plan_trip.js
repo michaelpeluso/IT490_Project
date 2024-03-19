@@ -461,11 +461,14 @@ function displayHotels(hotelOffers) {
   for (let i = 0; i < bookNowButtons.length; i++) {
     bookNowButtons[i].addEventListener('click', handleBookNowClick);
   }
+  
 }
 
 function handleBookNowClick() {
   console.log("Book Now clicked");
-  const hotelOfferData = JSON.parse(this.getAttribute('data-hotel'));
+  console.log("AHHHHHHHHHHHHH", JSON.parse(this.getAttribute('data-hotel')));
+  const hotelOfferData = console.log(JSON.parse(this.getAttribute('data-hotel')));
+  console.log("Booking Data:", hotelOfferData); 
   const hotel = hotelOfferData.hotel;
   const offer = hotelOfferData.offers[0];
 
@@ -478,6 +481,7 @@ function handleBookNowClick() {
     price: offer.price.total,
     currency: offer.price.currency
   };
+  // Add this line to check the booking data
 
   // Store the booking data in the browser's local storage
   localStorage.setItem('bookingData', JSON.stringify(bookingData));
@@ -570,10 +574,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (target.classList.contains('book-now')) {
       console.log("Book Now clicked");
       const hotelOfferData = JSON.parse(target.getAttribute('data-hotel'));
-      // The rest of your booking logic here...
 
-      // Example: Opening a new window/tab
-      window.open('./booking_page/booking.html', '_blank');
+      window.open('../booking_page/booking.html', '_blank');
     }
   });
 });
