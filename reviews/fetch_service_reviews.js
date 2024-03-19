@@ -3,12 +3,28 @@ const max_review_length = 300; // characters
 
 // fetch service reviews
 function fetchReviews() {
+	// Extract all URL parameters from the current URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {};
+    for (const [key, value] of urlParams) {
+        params[key] = value;
+    }
+    
+    // Construct the fetch URL with all URL parameters
+    let fetchUrl = "fetch_service_reviews.php";
+    if (Object.keys(params).length > 0) {
+        fetchUrl += "?" + new URLSearchParams(params).toString();
+    }
+  
+    
+	// make request to php file
     $.ajax({
-        url: "fetch_service_reviews.php",
+        url: fetchUrl,
         type: "GET",
         success: function (data) {
             // display data to user
-            displayReviews(data);
+            console.log(data);
+            //displayReviews(data);
         },
         error: function (xhr, status, error) {
             console.error("Error fetching reviews:", error);
