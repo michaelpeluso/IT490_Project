@@ -244,6 +244,59 @@ function doRegister($password,$email,$firstName,$lastName)
 }
 
 //
+// POST REVIEW
+//
+
+function postReview($auth_key, $user_id, $service_id, $review_rating, $review_body, $review_date) {
+	// error handling: check auth key
+	if (!isset($auth_key)) {
+		return createError("No auth key provided");
+	}
+
+    // connect to database
+	mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
+    
+    if ($mydb->errno != 0) {
+    	// error hgandling: check for valid connection
+		return createError("Failed to establish database connection");
+    }
+    echo "Successfully connected to database".PHP_EOL;
+    
+    // query the database
+    $query_user = "select user_id from reviews where authkey = '".$auth_key."';";
+    $response_user = $mydb->query($query_user);
+    
+    // error handling: check if auth key record exists
+    if ($response_user->num_rows == 0) {
+		return createError("No user with given auth key");
+    }
+    
+    // insert user reviews
+    $query_user = "insert into reviews (userID, serviceID, review_raing, review_body, review, date) values ('".$user_id."', '".$service_id."', '".$review_rating."', '".$review_body."', '".$review_date."');";
+    $response_reviews = $mydb->query($query_reviews);
+	
+	// error handling: check for valid response
+	if (!$response_reviews) {
+		return createError("Failed to retrieve records from table 'reviews'");
+	}
+	
+	// pack up data to return
+    $review_data = array(
+		'status' => 'ok',
+		'message' => 'Review posted'
+	);
+    while ($row = $response_reviews->fetch_assoc()) {
+        $review_data['reviews'][] = $row;
+    }
+
+    // Return the reviews array
+    echo "Posted: ".$review_rating." star review by user ".$user_id;
+    $mydb->close();
+    
+    return $review_data
+}
+
+//
 // FETCH USER REVIEWS
 //
 function fetchUserReviews($auth_key) {
@@ -277,7 +330,7 @@ function fetchUserReviews($auth_key) {
     $lastName = $row['lastName'];
 
     // fetch user reviews
-    $query_reviews = "SELECT * FROM reviews WHERE user_id = " . $user_id;
+    $query_reviews = "SELECT * FROM reviews WHERE user_id = '" . $user_id . "';";
     $response_reviews = $mydb->query($query_reviews);
 	
 	// error handling: check for valid response
@@ -288,6 +341,7 @@ function fetchUserReviews($auth_key) {
 	// pack up data to return
     $review_data = array(
 		'status' => 'ok',
+		'message' => 'Fetched user reviews',
 		'firstName' => $firstName,
 		'lasttName' => $lastName,
 		'reviews' => []
@@ -297,6 +351,9 @@ function fetchUserReviews($auth_key) {
     }
 
     // Return the reviews array
+    echo "Returned: ".$response_reviews->num_rows." reviews made by user ".$user_id;
+    $mydb->close();
+    
     return $review_data
 }
 
@@ -325,12 +382,16 @@ function fetchServiceReviews($service_id) {
 	// pack up data to return
     $review_data = array(
 		'status' => 'ok',
+		'message' => 'Fetched service reviews',
 	);
     while ($row = $response_reviews->fetch_assoc()) {
         $review_data[] = $row;
     }
 
     // Return the reviews array
+    echo "Returned: ".$response_reviews->num_rows." reviews of service ".$service_id;
+    $mydb->close();
+    
     return $review_data
 }
 
@@ -355,6 +416,9 @@ function requestProcessor($request)
     	
     case "validate_session":
       return doValidate($request['accesskey']);
+      
+  	case "post_review":
+      return postReview($request['auth_key'], $request['user_id'], $request['service_id'], $request['review_rating'], $request['review_body'], $request['review_date']);
       
 	case "get_user_reviews":
       return fetchUserReviews($request['auth_key']);

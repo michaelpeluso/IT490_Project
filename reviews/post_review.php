@@ -1,42 +1,48 @@
 <?php
 
-// Database connection settings
-$servername = $_ENV["DB_SERVERNAME"];
-$username = $_ENV["DB_USERNAME"];
-$password = $_ENV["DB_PASSWORD"];
-$dbname = "reviews";
+// dependecies
+require_once('../path.inc');
+require_once('../get_host_info.inc');
+require_once('../rabbitMQLib.inc');
 
-// Create a connection to the database
-$conn = new mysqli($servername, $username, $password, $dbname);
+// get local service data
+session_start();
+$auth_key = $_SESSION['key'];
 
-// Check the connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+$service_id = isset($_GET['service_id']) ? $_GET['service_id'] : null;
+$service_id = isset($_GET['review_rating']) ? $_GET['review_rating'] : null;
+$service_id = isset($_GET['review_body']) ? $_GET['review_body'] : null;
+$service_id = isset($_GET['review_date']) ? $_GET['review_date'] : null;
+
+// pack data for request
+$request = array(
+    'type' => "post_review",
+    'auth_key' => $auth_key,
+    'user_id' => $user_id,
+    'service_id' => $service_id,
+    'review_rating' => $review_rating,
+    'review_body' => $review_body,
+    'review_date' => $review_date
+);
+
+// connect to rabbitMQ
+$client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+$response = $client->send_request($request);
+
+// log response
+echo "Server response: \n";
+print_r($response);
+
+// validate response
+if ($response['status'] !== "ok") {
+	die("Could not connect to server.");
 }
 
-// Get the user ID (assuming you have a logged-in user)
-$user_id = 1; // Replace with the actual user ID
+// parse as json
+$json_response = json_encode($response);
+header('Content-Type: application/json');
 
-// Retrieve the restaurant data from the AJAX request
-$service_id = $_POST['service_id'];
-$service_type = $_POST['service_type'];
-$review_rating = $_POST['review_rating'];
-$review_body = $_POST['review_body'];
-$review_date = $_POST['review_date'];
+// return data
+echo $json_data
 
-// sql query
-$query = "INSERT INTO reviews (user_id, service_id, service_type, review_rating, review_body, review_date) 
-    VALUES (".$user_id.", ".$service_id.", ".$service_type.", ".$review_rating.", ".$review_body.", ".$review_date.")";
-
-// execute query
-$stmt = $conn->prepare($query);
-$stmt->bind_param("issd", $user_id, $service_id, $service_type, $review_rating, $review_body, $review_date); // prevents sql injection
-$stmt->execute();
-
-// error handling
-echo $result ? "Review inserted successfully." : "There was an error inserting your review into our database.";
-
-// Close the statement and database connection
-$stmt->close();
-$conn->close();
 ?>
