@@ -22,10 +22,10 @@ function fetchReviews() {
 }
 
 // Function to display reviews
-function displayReviews(reviews) {
+function displayReviews(reviews_data) {
     reviewsContainer.innerHTML = ""; // Clear previous reviews
 
-    reviews.forEach((review) => {
+    reviews_data.forEach((review) => {
         const reviewElement = document.createElement("div");
         reviewElement.classList.add("review");
 
