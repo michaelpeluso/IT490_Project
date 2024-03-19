@@ -55,7 +55,7 @@
         <script>
             function validateForm() {
                 // check if all required inputs are filled
-                const inputs = document.querySelectorAll("input[required], textarea[required]");
+                const inputs = document.querySelectorAll("input[required]");
                 for (let i = 0; i < inputs.length; i++) {
                     if (!inputs[i].value) {
                         alert("Please fill in rating field.");
@@ -67,9 +67,15 @@
             
             function postReview() {
             	if (validateForm()) {
+            		
+            		// serialize data
+            		var formData = $("#reviewForm").serialize();
+            	
+            		// make php request
 					$.ajax({
 						url: "post_review.php",
 						type: "POST",
+						data: formData,
 						success: function (data) {
 							// display data to user
 							displayReviews(data);

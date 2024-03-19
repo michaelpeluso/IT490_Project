@@ -11,20 +11,10 @@ $auth_key = $_SESSION['key'];
 
 $service_id = isset($_GET['service_id']) ? $_GET['service_id'] : null;
 
-$review_rating = $_POST['rating']; // serialized from form
-$review_body = $_POST['reviewText'];
-
-$review_date = date("m-d-Y");
-
 // pack data for request
 $request = array(
     'type' => "post_review",
     'auth_key' => $auth_key,
-    'user_id' => $user_id,
-    'service_id' => $service_id,
-    'review_rating' => $review_rating,
-    'review_body' => $review_body,
-    'review_date' => $review_date
 );
 
 // connect to rabbitMQ
