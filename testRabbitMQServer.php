@@ -249,11 +249,17 @@ function doRegister($password,$email,$firstName,$lastName)
 function fetchUserReviews($auth_key) {
 	// error handling: check auth key
 	if (!isset($auth_key)) {
-		returnError("No auth key provided");
+		return createError("No auth key provided");
 	}
 
     // connect to database
-    $mydb = mysqliConnection();
+	mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
+    
+    if ($mydb->errno != 0) {
+    	// error hgandling: check for valid connection
+		return createError("Failed to establish database connection");
+    }
+    echo "Successfully connected to database".PHP_EOL;
     
     // query the database
     $query_user = "select user_id from reviews where authkey = '".$auth_key."';";
@@ -261,7 +267,7 @@ function fetchUserReviews($auth_key) {
     
     // error handling: check if auth key record exists
     if ($response_user->num_rows == 0) {
-		returnError("No user with given auth key");
+		return createError("No user with given auth key");
     }
 
     // fetch the user data
@@ -276,7 +282,7 @@ function fetchUserReviews($auth_key) {
 	
 	// error handling: check for valid response
 	if (!$response_reviews) {
-		returnError("Failed to retrieve records from table 'reviews'");
+		return createError("Failed to retrieve records from table 'reviews'");
 	}
 	
 	// pack up data to return
@@ -299,7 +305,13 @@ function fetchUserReviews($auth_key) {
 //
 function fetchServiceReviews($service_id) {    
     // connect to database
-    $mydb = mysqliConnection();
+	mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
+    
+    if ($mydb->errno != 0) {
+    	// error hgandling: check for valid connection
+		return createError("Failed to establish database connection");
+    }
+    echo "Successfully connected to database".PHP_EOL;
 
     // fetch service reviews
 	$query_reviews = "SELECT * FROM reviews WHERE service_id == " . $service_id;
@@ -307,7 +319,7 @@ function fetchServiceReviews($service_id) {
 	
 	// error handling: check for valid response
 	if (!$response_reviews) {
-		returnError("Failed to retrieve records from table 'reviews'");
+		return createError("Failed to retrieve records from table 'reviews'");
 	}
 	
 	// pack up data to return
@@ -357,28 +369,14 @@ function requestProcessor($request)
 }
 
 //
-// RETURN ERROR
+// CREATE ERROR MESSAGE
 //
-function returnError($error_description) {
+function createError($error_description) {
 	echo $error_description . ": " . $mydb->error . PHP_EOL;
 	return array(
 	'status'=> "error",
 	'error'=> $error_description);
 	exit(0);
-}
-
-//
-// MYSQLI CONNECTION
-//
-function mysqliConnection() {
-    $mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
-    
-    // error hgandling: check for valid connection
-    if ($mydb->errno != 0) {
-		returnError("Failed to establish database connection");
-    }
-    echo "Successfully connected to database".PHP_EOL;
-    return $mydb;
 }
 
 $server = new rabbitMQServer("testRabbitMQ.ini","testServer");
