@@ -55,7 +55,7 @@
         <script>
             function validateForm() {
                 // check if all required inputs are filled
-                const inputs = document.querySelectorAll("input[required], textarea[required]");
+                const inputs = document.querySelectorAll("input[required]");
                 for (let i = 0; i < inputs.length; i++) {
                     if (!inputs[i].value) {
                         alert("Please fill in rating field.");
