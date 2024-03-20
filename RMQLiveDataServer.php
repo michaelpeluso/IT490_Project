@@ -8,10 +8,70 @@ include('condb.php');
 global $SODIUM_KEY_hex;
 $SODIUM_KEY_hex = "316d84ecd4bfd5c19ff9b3ad48c2780d8553a23a60a22d1e14c583decbd6fea9";
 
-function doHotels($key)
+function doHotels($data)
 {
 
-return "success";
+	$mydb = new mysqli('127.0.0.1','register','pwd','IT490');
+    	if ($mydb->errno != 0)	
+    	{
+		echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+		return array("error"=>"server error",
+		"status"=>"error");
+		exit(0);
+    	}
+
+    	echo "successfully connected to database".PHP_EOL;
+
+	$parsed = json_decode($data);
+	//var_dump($parsed);
+	var_dump($parsed->data);
+	$hotelOffers = $parsed->data;
+	
+	foreach ($hotelOffers as $hotelOffer){
+		$hotel = $hotelOffer->hotel;
+		$offer = $hotelOffer->offers[0];
+		
+		echo $hotel -> name."\n";
+		echo $hotel -> cityCode."\n";
+		echo $hotel -> hotelId."\n";
+		
+		
+		$query = "select * from hotels where hotelID = '".$hotel -> hotelId."';";
+    		$response = $mydb->query($query);
+	    	if ($mydb->errno != 0)
+	    	{
+			echo "failed to execute login query:".PHP_EOL;
+	    		echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
+	    		return array(
+			'status'=> "error",
+			'error'=> "Server Error");
+	    		exit(0);
+	    	}
+    	
+    	  	if($response -> num_rows == 0){
+		    	$query = 'insert into hotels (name, cityCode, hotelID) values ( "'.$hotel -> name.'", "'.$hotel -> cityCode.'", "'.$hotel -> hotelId.'" );';
+			//echo $query;
+			echo "\ninserted to database: ".$hotel -> hotelId;
+		    	$mydb->query($query);
+		    	if ($mydb->errno != 0)
+		    	{
+				echo "failed to execute login query:".PHP_EOL;
+		    		echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
+		    		return array(
+				'status'=> "error",
+				'error'=> "Server Error");
+		    		exit(0);
+		    	}
+    	
+    		}
+		//var_dump ($hotelOffer->hotel->name);
+	
+	
+	}
+	
+	$mydb-> close();
+
+	return "success";
 }
 
 function doFlights($data)
@@ -82,15 +142,17 @@ $mydb = new mysqli('127.0.0.1','register','pwd','IT490');
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
-  var_dump($request);
+  //var_dump($request);
   if(!isset($request['type']))
   {
     return array("returnCode" => '1', 'message' => "ERROR: unsupported message type", 'status'=>'error');
   }
+  echo($request['type']."\n");
+  echo($request['message']."\n");
   switch ($request['type'])
   {
     case "hotels":
-      return doHotels($request);
+      return doHotels($request["data"]);
     case "flights":
     	return doFlights($request["data"]);
     case "restaurants":

@@ -7,6 +7,7 @@ require_once('../rabbitMQLib.inc');
 $string = file_get_contents('php://input');
 $data = json_decode($string);
 
+//echo "hotels data: ";
 //var_dump($data);
 
 if ($data === null ){
@@ -14,21 +15,18 @@ if ($data === null ){
 }
 else{
 
-
+echo "sending to hotels api";
 // make connection 
 $client = new rabbitMQClient("../testRabbitMQ.ini","LiveDataServer");
 // request
 	$request = array(
-	'type' => "restaurants",
+	'type' => "hotels",
 	"data" => $string, 
-	'message' => "testing Restaurant API",
+	'message' => "testing Hotels API",
 	);
 	// resposnse
 	$response = $client->send_request($request);
 	var_dump($response);
-	//header("Content-Type: application/json");
-	//echo json_encode(array("latitude" => $_GET['latitude'], "longitude" => $_GET['longitude'], "radius"=>$_GET['radius']));
-	
 	
 }
 

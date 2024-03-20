@@ -23,7 +23,7 @@ function doValidate($key){
     echo "successfully connected to database".PHP_EOL;
     // check if username or email already exists if it does send back error
     
-    $query = "select * from user where authkey = '".$key."');";
+    $query = "select * from user where authkey = '".$key."';";
 	
     $response = $mydb->query($query);
     if ($mydb->errno != 0)
@@ -35,7 +35,7 @@ function doValidate($key){
     }
     if($response -> num_rows == 0){
 	echo "wrong credentials";
-	return "wrong credentials";
+	return "b1b3b674b41941ada10db032ba86bed1a7cb73101560ac8e771b9990bb42bfbc";
     }
     
     return ("valid key");
@@ -147,8 +147,8 @@ function doLogin($password, $email)
     'status' => "ok",
     'email' => $row['email'],
     'first_name' => $row['firstName'],
-    'last_name' => $row['lastName'],s
-    'user_id'=> $row['userID'],
+    'last_name' => $row['lastName'],
+    'user_id'=> $id,
     'key'=> $row['authkey'],
     );
     //echo (var_dump($data));
@@ -250,8 +250,8 @@ function doRegister($password,$email,$firstName,$lastName)
 function postReview($auth_key, $user_id, $service_type, $type_id, $review_rating, $review_body) {
 	
 	// error handling: validate all parameters
-	$params = array("user_id", "auth_key", "service_type", "type_id", "review_rating", "review_body") as $param;
-	foreach ($params) {
+	$params = array("user_id", "auth_key", "service_type", "type_id", "review_rating", "review_body");
+	foreach($params as $param) {
 		if (!isset($$param)) {
 		    return createError("No ". $$param ." provided");
 		}
@@ -359,7 +359,7 @@ function fetchUserReviews($auth_key) {
 //
 // FETCH SERVICE REVIEWS
 //
-function fetchServiceReviews($service_id) {
+function fetchServiceReviews($service_id, $service_type) {
 	// error handling: check service key
 	if (!isset($service_id)) {
 		return createError("No service id provided");
@@ -375,7 +375,7 @@ function fetchServiceReviews($service_id) {
     echo "Successfully connected to database".PHP_EOL;
 
     // fetch service reviews
-	$query_reviews = "SELECT firstName, lastName, type, review_date, review_body, review_rating, userID, typeID  FROM reviews join user on reviews.userID=user.ID  WHERE typeID =" . $service_id . ";";
+	$query_reviews = "SELECT firstName, lastName, type, review_date, review_body, review_rating, userID, typeID  FROM reviews join user on reviews.userID=user.ID  WHERE typeID =" . $service_id . " and type = '".$service_type."';";
     $response_reviews = $mydb->query($query_reviews);
 	
 	// error handling: check for valid response
@@ -384,10 +384,19 @@ function fetchServiceReviews($service_id) {
 	}
 	
 	// pack up data to return
+	$review = array();
+	while($row = $response_reviews -> fetch_assoc()){
+		$review[] = $row;
+		
+	}
+	
 	$review_data = array(
 		'status' => 'ok',
-		'message' => 'Posted new review'
+		'message' => 'Posted new review',
+		'reviews' => $review,
 	);
+	
+	
     var_dump($review_data);
 
     // Return the reviews array
@@ -428,7 +437,7 @@ function requestProcessor($request)
       return fetchUserReviews($request['auth_key']);
       
   	case "get_service_reviews":
-      return fetchServiceReviews($request['service_id']);
+      return fetchServiceReviews($request['service_id'], $request['service_type'] );
     
     default:
     	return array("returnCode" => '1', 'message' => "ERROR: unsupported message type", 'status'=>'error');
@@ -439,13 +448,25 @@ function requestProcessor($request)
 //
 // CREATE ERROR MESSAGE
 //
-function createError($error_description) {
-	echo $error_description . ": "  .  PHP_EOL;
-	return array(
-	'status'=> "error",
-	'error'=> $error_description);
+
+function createError($mydb=null, $error_description) {
+	if($mydb){
+		echo $error_description . ": ". $mybd->error  .  PHP_EOL;
+		return array(
+		'status'=> "error",
+		'error'=> $error_description);
+	}
+	else{
+		echo $error_description . ": " .  PHP_EOL;
+		return array(
+		'status'=> "error",
+		'error'=> $error_description);
+	}
 	exit(0);
 }
+
+
+
 
 $server = new rabbitMQServer("testRabbitMQ.ini","testServer");
 echo "testRabbitMQServer BEGIN".PHP_EOL;
