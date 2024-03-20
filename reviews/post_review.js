@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+	
+	// on form submit
 	$("#reviewForm").on('submit', function(event) {
+	
 		// validate form
 		const inputs = document.querySelectorAll("input[required]");
 		for (let i = 0; i < inputs.length; i++) {
@@ -20,9 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (Object.keys(params).length > 0) {
 			fetchUrl += "?" + new URLSearchParams(params).toString();
 		}
-
-		console.log(fetchUrl);
-		console.log(formData);
 
 		// make request to php file
 		$.ajax({
