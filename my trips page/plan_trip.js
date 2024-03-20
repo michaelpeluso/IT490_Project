@@ -603,8 +603,10 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-document.getElementById('saveTripButton').addEventListener('click', saveTrip);
-
+document.addEventListener('DOMContentLoaded', function() {
+  const saveTripButton = document.getElementById('save-trip-button');
+  saveTripButton.addEventListener('click', saveTrip);
+});
 function saveTrip() {
   console.log('Selected Trip Items:', selectedTripItems);
 }
