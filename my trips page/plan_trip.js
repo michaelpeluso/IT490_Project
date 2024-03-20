@@ -34,7 +34,7 @@ function searchArea() {
   // Geocode the search input to get the latitude and longitude
   var geocoder = new google.maps.Geocoder();
   geocoder.geocode({ address: searchInput }, async function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
+    if (status === google.maps.GeocoderStatus.OK) { 
       var location = results[0].geometry.location;
       var latitude = location.lat();
       var longitude = location.lng();
@@ -80,6 +80,7 @@ function searchArea() {
 }
 
 
+let resturantDataGlobal = []
 
 function searchNearbyRestaurants(latitude, longitude) {
   var service = new google.maps.places.PlacesService(document.createElement('div'));
@@ -91,6 +92,7 @@ function searchNearbyRestaurants(latitude, longitude) {
 
   service.nearbySearch(request, function(results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
+      restaurantDataGlobal = results;
       var restaurantsContainer = document.getElementById('restaurants-container');
       restaurantsContainer.innerHTML = ''; // Clear previous results
 
