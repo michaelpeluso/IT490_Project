@@ -11,7 +11,7 @@ function fetchReviews() {
     }
     
     // Construct the fetch URL with all URL parameters
-    let fetchUrl = "fetch_service_reviews.php";
+    let fetchUrl = "service_reviews.php";
     if (Object.keys(params).length > 0) {
         fetchUrl += "?" + new URLSearchParams(params).toString();
     }

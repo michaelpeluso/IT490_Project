@@ -4,7 +4,7 @@ const max_review_length = 300; // characters
 // fetch user reviews
 function fetchReviews() {
     $.ajax({
-        url: "fetch_my_reviews.php",
+        url: "my_reviews.php",
         type: "GET",
         success: function (data) {
             // display data to user
