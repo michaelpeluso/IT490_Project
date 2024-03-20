@@ -140,7 +140,9 @@
   </style>
 </head>
 <body>
+  <div id="navbar"></div>
   <div class="container">
+    
     <h1>Plan a Trip</h1>
     <form>
       <div class="form-group">
@@ -264,4 +266,17 @@
     <button id="save-trip-button" class="btn btn-primary">Save Trip</button>
   </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function() {
+        $('#navbar').load('../navbar/index.html' , function() {
+            // Hide login and signup buttons on pages other than the landing page
+            if (window.location.pathname !== '/landing_page/index.html') {
+                $('#loginLink').hide();
+                $('#signupLink').hide();
+                $('#logoutLink').show();
+            }
+        });
+    });
+</script>
 </html>

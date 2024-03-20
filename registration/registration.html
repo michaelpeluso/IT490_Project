@@ -39,6 +39,7 @@
     </style>
 </head>
 <body>
+    <div id="navbar"></div>
     <div class="form-container">         <h2 style = "text-align: center;">Register</h2>
 
         <form action="register.php" method="POST">
@@ -63,4 +64,17 @@
         </form>
     </div> 
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function() {
+        $('#navbar').load('../navbar/index.html' , function() {
+            // Hide login and signup buttons on pages other than the landing page
+            if (window.location.pathname !== '/landing_page/index.html' || '/login/login.html') {
+                $('#loginLink').hide();
+                $('#signupLink').hide();
+                $('#logoutLink').show();
+            }
+        });
+      });
+</script>
 </html>

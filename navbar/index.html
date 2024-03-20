@@ -1,22 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navigation Software</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header class="header">
-        <a href="#" class="logo">TripTeller</a>
-        <nav class="navbar">
-            <a href="#">Home</a>
-            <a href="#">Trip</a>
-            <a href="#">Contact</a>
-            <a href="#">Login</a>
-            <a href="#">Signup</a>
-        </nav>
-    </header>
-</body>
-</html>
+<link rel="stylesheet" href="styles.css">
+<style>
+    body {
+        font-family: 'Open Sans', sans-serif;
+    }
+    
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f5f5f5;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-title {
+        font-size: 65px;
+        font-weight: bold;
+        color: #333333;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .navbar-links {
+        display: flex;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .navbar-links li {
+        margin-right: 20px;
+    }
+    
+    .navbar-links li:last-child {
+        margin-right: 0;
+    }
+    
+    .navbar-links a {
+        color: #333333;
+        text-decoration: none;
+        font-size: 22px;
+        font-weight: bold;
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .navbar-links a:hover {
+        background-color: #BDE3FF;
+    }
+    .navbar-links a {
+        position: relative;
+        font-size: 22px;
+        color: #333333;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 4px;
+        text-decoration: none;
+        margin-left: 40px;
+    }
+    .navbar-links a::before{
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #333333;
+        transition: .3s;
+    }
+    .navbar-links a:hover::before {
+        width: 100%;
+    }
+    main {
+        padding: 40px;
+    }
+    
+    section {
+        padding: 40px 0;
+        margin-bottom: 40px;
+    }
+    
+    .ai-powered {
+        background-color: #ffffff;
+        padding: 60px 40px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-left: -40px;
+        margin-right: -40px;
+    }
+    
+    
+</style>
+<nav class="navbar">
+    <ul class="navbar-links">
+        <li><a href="../landing_page/index.html">HOME</a></li>
+        <li><a href="../my_trips_page/index.html">TRIPS</a></li>
+    </ul>
+    <div class="navbar-title">TRIPTELLER</div>
+    <ul class="navbar-links">
+        <li><a href="../login/login.html" id="loginLink">LOGIN</a></li>
+        <li><a href="../registration/registration.html" id="signupLink">SIGN UP</a></li>
+        <li><a href="#" id="logoutLink" style="display: none;">LOGOUT</a></li>
+    </ul>
+</nav>
