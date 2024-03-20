@@ -246,6 +246,20 @@ function convertToIATACodes(accessToken, origin, destination) {
     }));
 }
 
+async function sendToDB(result){
+//console.log("data before send to db", JSON.stringify(data));
+	console.log("param", await JSON.stringify(result));
+    const response20 = await fetch(`http://100.35.46.200/The-Cartographer/my_trips/flights.php`, 
+      {
+   	 method: "POST",
+   	 headers:{"Content-Type" : 'application/json'},
+    	 body: JSON.stringify(result),
+      });
+      console.log("php response", await response20.text());
+
+
+}
+
 function searchFlightOffers(accessToken, originCode, destinationCode, departureDate) {
   var url = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
   var params = new URLSearchParams({
@@ -266,6 +280,7 @@ function searchFlightOffers(accessToken, originCode, destinationCode, departureD
       if (!response.ok) {
         throw new Error('Error fetching flight offers: ' + response.status);
       }
+      
       return response.json();
     })
     .then(data => {
@@ -274,6 +289,8 @@ function searchFlightOffers(accessToken, originCode, destinationCode, departureD
       flightsContainer.innerHTML = ''; // Clear previous results
 
       if (data && data.data && data.data.length > 0) {
+      	
+        sendToDB(data);
         data.data.forEach(flight => {
           var flightCard = document.createElement('div');
           flightCard.className = 'card mb-3';
