@@ -133,6 +133,8 @@ function searchNearbyRestaurants(latitude, longitude) {
   });
 }
 
+let selectedTripItems = [];
+
 function addRestaurantToTrip() {
   var restaurantData = JSON.parse(this.getAttribute('data-restaurant'));
   var restaurantName = restaurantData.name;
@@ -153,11 +155,18 @@ function addRestaurantToTrip() {
   // Attach event listener to the remove button
   var removeButton = tripItem.querySelector('.remove-from-trip');
   removeButton.addEventListener('click', removeRestaurantFromTrip);
+
+  selectedTripItems.push(restaurantData);
+
 }
 
 function removeRestaurantFromTrip() {
   var tripItem = this.closest('.trip-item');
   tripItem.remove();
+  const index = selectedTripItems.findIndex(item => item.name === restaurantData.name);
+  if (index !== -1) {
+    selectedTripItems.splice(index, 1);
+  }
 }
 
 function searchFlights(originCode, destinationCode) {
@@ -350,11 +359,17 @@ function addFlightToTrip() {
   // Attach event listener to the remove button
   var removeButton = tripItem.querySelector('.remove-from-trip');
   removeButton.addEventListener('click', removeFlightFromTrip);
+  selectedTripItems.push(flightData);
+
 }
 
 function removeFlightFromTrip() {
   var tripItem = this.closest('.trip-item');
   tripItem.remove();
+  const index = selectedTripItems.findIndex(item => JSON.stringify(item) === JSON.stringify(flightData));
+  if (index !== -1) {
+    selectedTripItems.splice(index, 1);
+  }
 }
 
 
@@ -517,11 +532,17 @@ function addHotelToFavorites() {
   // Attach event listener to the remove button
   const removeButton = tripItem.querySelector('.remove-from-trip');
   removeButton.addEventListener('click', removeHotelFromTrip);
+  selectedTripItems.push(hotelOfferData);
 }
 
 function removeHotelFromTrip() {
   const tripItem = this.closest('.trip-item');
   tripItem.remove();
+
+  const index = selectedTripItems.findIndex(item => JSON.stringify(item) === JSON.stringify(hotelOfferData));
+  if (index !== -1) {
+    selectedTripItems.splice(index, 1);
+  }
 }
 
 function filterHotels() {
@@ -581,3 +602,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+document.getElementById('saveTripButton').addEventListener('click', saveTrip);
+
+function saveTrip() {
+  console.log('Selected Trip Items:', selectedTripItems);
+}
