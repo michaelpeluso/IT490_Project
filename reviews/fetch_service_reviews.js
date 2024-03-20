@@ -23,8 +23,8 @@ function fetchReviews() {
         type: "GET",
         success: function (data) {
             // display data to user
-            console.log(data);
-            //displayReviews(data);
+            console.log(JSON.parse(data));
+            displayReviews(JSON.parse(data));
         },
         error: function (xhr, status, error) {
             console.error("Error fetching reviews:", error);
@@ -38,10 +38,15 @@ function fetchReviews() {
 }
 
 // Function to display reviews
-function displayReviews(reviews) {
+function displayReviews(reviews_data) {
     reviewsContainer.innerHTML = ""; // Clear previous reviews
 
-    reviews.forEach((review) => {
+	review_arrays = reviews_data.reviews;
+    review_arrays.forEach((review) => {
+    	//check for valid value
+    	
+    	
+    	// create html elemnts
         const reviewElement = document.createElement("div"); 
         reviewElement.classList.add("review");
 
@@ -58,8 +63,9 @@ function displayReviews(reviews) {
         reviewElement.innerHTML = `
             <div class="review-cell">
                 <div style="display: flex; justify-content: space-between">
-                    <h3 class="review-userid"> ${review.user_id}</h3>
-                    <h3 class="review-serviceid"><a href="${review.service_id}.html">${review.service_id}</a></h3>
+                    <h3> ${review.firstName} ${review.lastName}</h3>
+                    <!--<h3><a href="${review.serviceID}.html">${review.serviceID}</a></h3>-->
+                    <h3> Service: ${review.serviceID}</a></h3>
                 </div>
                 <div class="stars" style="display: flex; justify-content: center">
                     <span class="star" data-value="1"></span>

@@ -21,9 +21,7 @@ try {
     $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
     $response = $client->send_request($request);
     
-    if ($response !== false) {
-        var_dump($response);
-    } else {
+    if ($response == false) {
         echo "Failed to receive response from RabbitMQ server.";
     }
 } catch (Exception $e) {
@@ -35,12 +33,6 @@ if ($response['status'] !== "ok") {
 	die("Could not connect to server.");
 }
 
-
 // parse as json
-//$json_response = json_encode($response);
-//header('Content-Type: application/json');
-
-// return data
-//echo $json_data;
-
+echo json_encode($response);
 ?>
