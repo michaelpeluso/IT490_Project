@@ -80,7 +80,7 @@ function searchArea() {
 }
 
 
-let resturantDataGlobal = []
+let restaurantDataGlobal = []
 
 function searchNearbyRestaurants(latitude, longitude) {
   var service = new google.maps.places.PlacesService(document.createElement('div'));
