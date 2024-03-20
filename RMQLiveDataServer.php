@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
@@ -140,12 +141,37 @@ $mydb = new mysqli('127.0.0.1','register','pwd','IT490');
 }
 
 
-function doEmails($title, $description, $date )
+function doEmails($title, $description, $date , $email)
 {
 	
-	echo $title;
-	echo $description;
-	echo $date;
+
+	if($description == ""){
+		return "no trips";
+	}
+	
+	    $mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
+
+    if ($mydb->errno != 0)	
+    {
+	echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+	exit(0);
+    }
+    echo "successfully connected to database".PHP_EOL;
+    
+    $query = "insert into email (subject, message, subDate, reciverAdd) values('".$title."','".$description."','".$date."','".$email."');";
+    
+    // get current date time
+    $mydb->query($query);
+    if ($mydb->errno != 0)
+    {
+	echo "failed to execute login query:".PHP_EOL;
+    	echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
+    	return array(
+	'status'=> "error",
+	'error'=> "Server error");
+    exit(0);
+    }
+    
     return "success";
 }
 
@@ -162,7 +188,7 @@ function requestProcessor($request)
   switch ($request['type'])
   {
     case "emails":
-    	return doEmails($request["title"], $request["description"], $request["date"] );
+    	return doEmails($request["title"], $request["description"], $request["date"], $request["email"] );
     case "hotels":
       return doHotels($request["data"]);
     case "flights":
