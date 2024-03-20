@@ -8,11 +8,10 @@ require_once('../rabbitMQLib.inc');
 // get local service data
 session_start();
 $auth_key = $_SESSION['key'];
+$auth_key = $_SESSION['user_id'];
 
-$service_id = isset($_GET['service_id']) ? $_GET['service_id'] : null;
-
-$review_rating = $_POST['rating']; // serialized from form
-$review_body = $_POST['reviewText'];
+$review_rating = $_POST['review_rating'];
+$review_body = $_POST['review_body'];
 
 // pack data for request
 $request = array(
