@@ -1,11 +1,118 @@
-<!DOCTYPE>
-<html>
-	<head>
-	</head>
-	<body>
-		<div>
-		<div><a href="./login/login2.php">Login</a> <a href="./registration/register.php">Register</a></div>
-		<H1>Welcome</H1>
-		</div>
-	</body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Software</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navbar-links">
+            <li><a href="">HOME</a></li>
+            <li><a href="./my_trips">TRIPS</a></li>
+        </ul>
+        <div class="navbar-title">TRIPTELLER</div>
+        <ul class="navbar-links">
+            <li><a href="./login/login2.php">LOGIN</a></li>
+            <li><a href="./registration/register.php">SIGN UP</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section class="interactive-tutorial">
+            <h2>Your Trip Starts Here</h2>
+            <div class="tutorial-steps">
+              <div class="step" data-step="1">
+                <div class="tutorial-icon">
+                    <i class="fas fa-plane"></i>
+                </div>
+                <div class="description">
+                  <h3>Select Your Preferences</h3>
+                  <p>Choose your travel preferences, including destinations, activities, and accommodations.</p>
+                </div>
+              </div>
+              <div class="step" data-step="2">
+                <div class="tutorial-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="description">
+                  <h3>Generate Your Itinerary</h3>
+                  <p>Our AI-powered system will generate a personalized itinerary based on your preferences.</p>
+                </div>
+              </div>
+              <div class="step" data-step="3">
+                <div class="tutorial-icon">
+                    <i class="fas fa-suitcase-rolling"></i>
+                </div>
+                <div class="description">
+                  <h3>Book Your Trip</h3>
+                  <p>Easily book your accommodations, transportation, and activities directly through our app.</p>
+                </div>
+              </div>
+            </div>
+
+          </section>
+        <!-- <section class="explainer">
+            <h2>How to use?</h2>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </section> -->
+        <section class="ai-powered">
+            <h2>Powered by AI</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI-Generated Itineraries</h3>
+                    <p>Our app uses artificial intelligence to create personalized vacation itineraries based on your preferences.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3>Intelligent Routing</h3>
+                    <p>Get optimized routes for your road trip, including rest stops, gas stations, and points of interest.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                    <h3>Lodging</h3>
+                    <p>Discover the best places to stay during your trip, tailored to your preferences and budget.</p>
+                </div>
+            </div>
+        </section>
+        <section class="trips-generated">
+            <h2>Trips Generated</h2>
+            <div class="trip-grid">
+                <div class="trip">
+                    <img src="https://media.timeout.com/images/105766941/image.jpg" alt="Trip 1">
+                    <h3>California Road Trip</h3>
+                    <p>Explore the beautiful coastline and scenic routes of California.</p>
+                    <a href="my-trips.html" class="view-trip">View Trip</a>
+                </div>
+                <div class="trip">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moraine_Lake_17092005.jpg/1200px-Moraine_Lake_17092005.jpg" alt="Trip 2">
+                    <h3>Rocky Mountain Adventure</h3>
+                    <p>Discover the stunning landscapes and outdoor activities in the Rocky Mountains.</p>
+                    <a href="my-trips.html" class="view-trip">View Trip</a>
+                </div>
+                <div class="trip">
+                    <img src="https://hips.hearstapps.com/hmg-prod/images/new-england-fall-foliage-places-lyme-connecticut-gillette-castle-state-park-1658861036.jpg" alt="Trip 3">
+                    <h3>New England Fall Foliage</h3>
+                    <p>Witness the breathtaking fall colors in the picturesque New England region.</p>
+                    <a href="my-trips.html" class="view-trip">View Trip</a>
+                </div>
+                <div class="trip empty-trip"></div>
+                <div class="trip empty-trip"></div>
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
 </html>

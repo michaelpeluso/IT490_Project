@@ -145,7 +145,7 @@ if ($_SERVER["REQUEST_METHOD"]=="POST"){
             	<label for="sign up">Don\'t have an account yet? <a class="test2" href="../registration/register.php">sign up!</label><br>
 	    </div>
 	    <div>
-            	<input type="submit" style = "align-items: center;"="Register" value="Register"> 
+            	<input type="submit" style = "align-items: center;"="Register" value="Login"> 
             </div>';
             	
         ?>

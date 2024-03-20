@@ -139,6 +139,16 @@ $mydb = new mysqli('127.0.0.1','register','pwd','IT490');
    "message" => "all restaurants were added");
 }
 
+
+function doEmails($title, $description, $date )
+{
+	
+	echo $title;
+	echo $description;
+	echo $date;
+    return "success";
+}
+
 function requestProcessor($request)
 {
   echo "received request".PHP_EOL;
@@ -151,6 +161,8 @@ function requestProcessor($request)
   echo($request['message']."\n");
   switch ($request['type'])
   {
+    case "emails":
+    	return doEmails($request["title"], $request["description"], $request["date"] );
     case "hotels":
       return doHotels($request["data"]);
     case "flights":

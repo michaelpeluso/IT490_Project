@@ -609,6 +609,44 @@ function getDefaultCheckOutDate() {
   return checkOutDate.toISOString().split('T')[0];
 }
 
+
+async function sendEmail(title, description, date){
+	console.log(title, description, date);
+	const response = await fetch(`http://100.35.46.200/The-Cartographer/my_trips/add_to_trip.php`, 
+      {
+   	 method: "POST",
+   	 headers:{"Content-Type" : 'application/json'},
+    	 body: JSON.stringify({
+    	 "title" : title,
+    	 "description" : description,
+    	 "date" : date,
+    	 }),
+      });
+      console.log("php Email response", await response.text());
+
+}
+
+function savePlan(){
+  
+  var nodeList = document.querySelectorAll('.trip-item');
+  var plan = "";
+    nodeList.forEach(function(item) {
+    // Do something with each item, for example:
+    plan += item.textContent + "\n";
+    //console.log(item.textContent);
+    
+  });
+  var searchInput = document.getElementById('search-area').value;
+  var title = "this is your planned trip to " + searchInput;
+  //console.log(plan);
+  //console.log(title);
+  var date = document.getElementById('departure-date').value;
+  sendEmail(title, plan, date);
+  
+  
+}
+
+
 // Initialize the autocomplete functionality when the page loads
 google.maps.event.addDomListener(window, 'load', initAutocomplete);
 
