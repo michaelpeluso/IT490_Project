@@ -19,14 +19,15 @@
     
     // get current date time
     $currTime = new DateTime();
+    $currTime -> setTime(0, 0, 0);
     $time1 = $currTime->format('Y-m-d H:i');
-    $currTime ->modify("+1 hour");
+    $currTime->setTime(23, 59, 59);
     $time2 = $currTime->format('Y-m-d H:i');
     
     
     
     echo "".$time1." - ".$time2."\n";
-    $query = "select * from email where subDate < '".$time2."' and  subDate > '".$time1."';";
+    $query = "select * from email where subDate <= '".$time2."' and  subDate >= '".$time1."';";
     
     $response = $mydb->query($query);
     if ($mydb->errno != 0)
@@ -39,10 +40,10 @@
     exit(0);
     }
     if($response -> num_rows == 0){
-	echo "wrong credentials";
+	echo "no emails to send";
 	return array(
 	'status'=> "error",
-	'error'=> "Wrong credentials");
+	'error'=> "no emails to send");
     }
     
     $IDs = array();
