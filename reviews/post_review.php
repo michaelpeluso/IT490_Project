@@ -45,6 +45,6 @@ $json_response = json_encode($response);
 header('Content-Type: application/json');
 
 // return data
-echo $json_data
+echo $json_data;
 
 ?>

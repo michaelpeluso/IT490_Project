@@ -254,7 +254,7 @@ function postReview($auth_key, $user_id, $service_id, $review_rating, $review_bo
 	}
 
     // connect to database
-	mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
+	$mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
     
     if ($mydb->errno != 0) {
     	// error hgandling: check for valid connection
@@ -293,7 +293,7 @@ function postReview($auth_key, $user_id, $service_id, $review_rating, $review_bo
     echo "Posted: ".$review_rating." star review by user ".$user_id;
     $mydb->close();
     
-    return $review_data
+    return $review_data;
 }
 
 //
@@ -306,7 +306,7 @@ function fetchUserReviews($auth_key) {
 	}
 
     // connect to database
-	mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
+	$mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
     
     if ($mydb->errno != 0) {
     	// error hgandling: check for valid connection
@@ -354,7 +354,7 @@ function fetchUserReviews($auth_key) {
     echo "Returned: ".$response_reviews->num_rows." reviews made by user ".$user_id;
     $mydb->close();
     
-    return $review_data
+    return $review_data;
 }
 
 //
@@ -362,7 +362,7 @@ function fetchUserReviews($auth_key) {
 //
 function fetchServiceReviews($service_id) {    
     // connect to database
-	mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
+	$mydb = new mysqli('127.0.0.1','register','pwd','IT490');// <-- ip may have to be changed if it does not work
     
     if ($mydb->errno != 0) {
     	// error hgandling: check for valid connection
@@ -371,7 +371,7 @@ function fetchServiceReviews($service_id) {
     echo "Successfully connected to database".PHP_EOL;
 
     // fetch service reviews
-	$query_reviews = "SELECT * FROM reviews WHERE service_id == " . $service_id;
+	$query_reviews = "SELECT firstName, lastName, type, review_date, review_body, review_rating, userID, serviceID  FROM reviews join user on reviews.userID=user.ID  WHERE serviceID =" . $service_id . ";";
     $response_reviews = $mydb->query($query_reviews);
 	
 	// error handling: check for valid response
@@ -380,19 +380,26 @@ function fetchServiceReviews($service_id) {
 	}
 	
 	// pack up data to return
+    $review = array();
+    while ($row = $response_reviews->fetch_assoc()) {
+        $review[] = $row;
+    }
+    
+    
     $review_data = array(
 		'status' => 'ok',
 		'message' => 'Fetched service reviews',
+		'reviews' => $review,
 	);
-    while ($row = $response_reviews->fetch_assoc()) {
-        $review_data[] = $row;
-    }
+    var_dump($review_data);
 
     // Return the reviews array
     echo "Returned: ".$response_reviews->num_rows." reviews of service ".$service_id;
     $mydb->close();
     
-    return $review_data
+    
+    //return array("status" => "ok");
+    return $review_data;
 }
 
 //
@@ -424,6 +431,7 @@ function requestProcessor($request)
       return fetchUserReviews($request['auth_key']);
       
   	case "get_service_reviews":
+  	
       return fetchServiceReviews($request['service_id']);
     
     default:
@@ -436,7 +444,7 @@ function requestProcessor($request)
 // CREATE ERROR MESSAGE
 //
 function createError($error_description) {
-	echo $error_description . ": " . $mydb->error . PHP_EOL;
+	echo $error_description . ": "  .  PHP_EOL;
 	return array(
 	'status'=> "error",
 	'error'=> $error_description);
