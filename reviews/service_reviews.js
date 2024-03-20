@@ -3,6 +3,7 @@ const max_review_length = 300; // characters
 
 // fetch service reviews
 function fetchReviews() {
+
 	// Extract all URL parameters from the current URL
     const urlParams = new URLSearchParams(window.location.search);
     const params = {};
@@ -15,7 +16,6 @@ function fetchReviews() {
     if (Object.keys(params).length > 0) {
         fetchUrl += "?" + new URLSearchParams(params).toString();
     }
-  
     
 	// make request to php file
     $.ajax({
@@ -23,17 +23,13 @@ function fetchReviews() {
         type: "GET",
         success: function (data) {
             // display data to user
-            console.log(JSON.parse(data));
+            console.log(data);
             displayReviews(JSON.parse(data));
         },
-        error: function (xhr, status, error) {
-            console.error("Error fetching reviews:", error);
-            reviewsContainer.innerHTML = `
-                <p style="background-color: #f8d7da; color: #721c24; padding: 10px; border: 1px solid #f5c6cb;">
-                    Error: Something went wrong fetching your reviews.
-                </p>
-            `;
-        },
+		error: function (xhr, status, error) {
+			console.log("Error making post: ");
+			console.error(error);
+		}
     });
 }
 
