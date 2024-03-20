@@ -147,7 +147,8 @@ function doLogin($password, $email)
     'status' => "ok",
     'email' => $row['email'],
     'first_name' => $row['firstName'],
-    'last_name' => $row['lastName'],
+    'last_name' => $row['lastName'],s
+    'user_id'=> $row['userID'],
     'key'=> $row['authkey'],
     );
     //echo (var_dump($data));

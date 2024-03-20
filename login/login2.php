@@ -207,6 +207,7 @@ echo ($response['status']);
 if ($response['status'] === "ok"){
 	session_start();
 	$_SESSION["key"] = $response['key'];
+	$_SESSION["user_id"] = $response['user_id'];
 	$_SESSION["first_name"] = $response['first_name'];
 	$_SESSION["last_name"] = $response['last_name'];
 	$_SESSION["email"] = $response['email'];
