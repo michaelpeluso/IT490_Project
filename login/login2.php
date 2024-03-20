@@ -210,7 +210,7 @@ if ($response['status'] === "ok"){
 	$_SESSION["first_name"] = $response['first_name'];
 	$_SESSION["last_name"] = $response['last_name'];
 	$_SESSION["email"] = $response['email'];
-	header("Location: http://100.35.46.200/IT490_Project/registered/");
+	header("Location: ../registered/");
 }else{
 $returnErr = $response['message'];
 }
