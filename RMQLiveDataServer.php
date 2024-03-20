@@ -19,11 +19,64 @@ function doFlights($data)
     return "success";
 }
 
-function doRestaurants($password)
+function doRestaurants($data)
 {
+
+$mydb = new mysqli('127.0.0.1','register','pwd','IT490');
+    if ($mydb->errno != 0)	
+    {
+	echo "failed to connect to database: ". $mydb->error . PHP_EOL;
+	return array("error"=>"server error",
+	"status"=>"error");
+	exit(0);
+    }
+
+    echo "successfully connected to database".PHP_EOL;
+    // check if username or email already exists if it does send back error
    //insert a new restaurant to the database
+    $parsed = json_decode($data);
+    //var_dump($parsed);
+    foreach($parsed as $restaurant){
     
-   return "success";
+    	//var_dump($restaurant);
+    	/*echo "\n\n".$restaurant-> name . "\n";
+    	echo $restaurant-> rating. "\n";
+    	echo $restaurant-> vicinity. "\n";
+    	echo $restaurant-> place_id."\n";*/
+    	
+    	$query = "select * from restaurants where placeID = '".$restaurant-> place_id."';";
+    	$response = $mydb->query($query);
+    	if ($mydb->errno != 0)
+    	{
+		echo "failed to execute login query:".PHP_EOL;
+    		echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
+    		return array(
+		'status'=> "error",
+		'error'=> "Server Error");
+    		exit(0);
+    	}
+    	
+    	if($response -> num_rows == 0){
+	    	$query = 'insert into restaurants (name, rating, address, placeID) values ( "'.$restaurant-> name.'", "'.$restaurant-> rating.'", "'.$restaurant-> vicinity.'", "'.$restaurant-> place_id.'" );';
+		//echo $query;
+		echo "\ninserted to database: ".$restaurant-> place_id;
+	    	$mydb->query($query);
+	    	if ($mydb->errno != 0)
+	    	{
+			echo "failed to execute login query:".PHP_EOL;
+	    		echo __FILE__.':'.__LINE__.":error: ".$mydb->error.PHP_EOL;
+	    		return array(
+			'status'=> "error",
+			'error'=> "Server Error");
+	    		exit(0);
+	    	}
+    	
+    	}
+    }
+    
+    $mydb -> close();
+   return array ("status" => "ok",
+   "message" => "all restaurants were added");
 }
 
 function requestProcessor($request)
@@ -41,7 +94,7 @@ function requestProcessor($request)
     case "flights":
     	return doFlights($request["data"]);
     case "restaurants":
-    	return doRestaurants($request);
+    	return doRestaurants($request["data"]);
     default:
     	return array("returnCode" => '1', 'message' => "ERROR: unsupported message type", 'status'=>'error');
   }

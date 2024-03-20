@@ -79,6 +79,19 @@ function searchArea() {
 
 }
 
+async function sendToDBRestaurant(result){
+
+//console.log("data before send to db", JSON.stringify(data));
+	console.log("param", await JSON.stringify(result));
+
+    const response = await fetch(`http://100.35.46.200/The-Cartographer/my_trips/restaurants.php`, 
+      {
+   	 method: "POST",
+   	 headers:{"Content-Type" : 'application/json'},
+    	 body: JSON.stringify(result),
+      });
+      console.log("php restaurant response", await response.text());
+}
 
 
 function searchNearbyRestaurants(latitude, longitude) {
@@ -91,6 +104,7 @@ function searchNearbyRestaurants(latitude, longitude) {
 
   service.nearbySearch(request, function(results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
+    
       var restaurantsContainer = document.getElementById('restaurants-container');
       restaurantsContainer.innerHTML = ''; // Clear previous results
 
@@ -98,6 +112,11 @@ function searchNearbyRestaurants(latitude, longitude) {
         restaurantsContainer.innerHTML = '<h2 class="nearby-restaurants-title text-center mb-4">Nearby Restaurants</h2>';
         var restaurantCardsContainer = document.createElement('div');
         restaurantCardsContainer.className = 'restaurant-cards';
+	
+	console.log(results);
+	sendToDBRestaurant(results);
+	
+	
 
         results.forEach(restaurant => {
           var restaurantInfo = `

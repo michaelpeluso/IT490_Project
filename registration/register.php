@@ -216,7 +216,7 @@ echo "Server response: \n";
 print_r($response);
 
 if ($response['status'] === "ok"){
-	header("Location:  http://100.35.46.200/IT490_Project/login/login2.php");
+	header("Location:  ../login2.php");
 }
 }
 
