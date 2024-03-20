@@ -1,32 +1,40 @@
 <?php
 // Database connection settings
-$servername = "sql1.njit.edu";
-$username = "atj2";
-$password = "A.Cherry8890";
-$dbname = "trips";
+//send email!
+//DEPENDENCIES
+require_once('../path.inc');
+require_once('../get_host_info.inc');
+require_once('../rabbitMQLib.inc');
 
-// Create a connection to the database
-$conn = new mysqli($servername, $username, $password, $dbname);
+$string = file_get_contents('php://input');
+$data = json_decode($string);
 
-// Check the connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+
+if ($data === null ){
+	echo "error parsing json";
+}
+else{
+
+//echo "sending to Emails api ".$data->title;
+// make connection 
+$client = new rabbitMQClient("../testRabbitMQ.ini","LiveDataServer");
+// request
+	$request = array(
+	'type' => "emails",
+	"title" => $data->title, 
+	"description" =>$data -> description,
+	"date" => $data -> date,
+	'message' => "testing Email API",
+	);
+	echo "this is the request: ".$request;
+	// resposnse
+	$response = $client->send_request($request);
+	//var_dump($response);
+	
 }
 
-// Retrieve the restaurant data from the AJAX request
-$name = $_POST['name'];
-$address = $_POST['address'];
-$rating = $_POST['rating'];
 
-// Get the user ID (assuming you have a logged-in user)
-$user_id = 1; // Replace with the actual user ID
 
-// Prepare and execute the SQL query to insert the restaurant data into the database
-$stmt = $conn->prepare("INSERT INTO trips (user_id, restaurant_name, restaurant_address, restaurant_rating) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("issd", $user_id, $name, $address, $rating);
-$stmt->execute();
 
-// Close the statement and database connection
-$stmt->close();
-$conn->close();
+
 ?>
