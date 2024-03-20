@@ -211,7 +211,7 @@ if ($response['status'] === "ok"){
 	$_SESSION["first_name"] = $response['first_name'];
 	$_SESSION["last_name"] = $response['last_name'];
 	$_SESSION["email"] = $response['email'];
-	header("Location: ../registered/");
+	header("Location: ../");
 }else{
 $returnErr = $response['message'];
 }
