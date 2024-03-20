@@ -392,6 +392,20 @@ function removeFlightFromTrip() {
 }
 
 
+async function sendToDBHotels(result){
+
+//console.log("data before send to db", JSON.stringify(data));
+	console.log("param hotels data", await JSON.stringify(result));
+
+    const response = await fetch(`http://100.35.46.200/The-Cartographer/my_trips/hotels.php`, 
+      {
+   	 method: "POST",
+   	 headers:{"Content-Type" : 'application/json'},
+    	 body: JSON.stringify(result),
+      });
+      console.log("php hotel response", await response.text());
+}
+
 let allHotels = []; // Store all the fetched hotels
 
 async function searchHotels(latitude, longitude) {
@@ -436,8 +450,9 @@ async function searchHotelOffers(latitude, longitude, hotelIds) {
     if (!hotelOffersResponse.ok) {
       throw new Error('Failed to retrieve hotel offers');
     }
-
+    
     const hotelOffersData = await hotelOffersResponse.json();
+    sendToDBHotels(hotelOffersData);
     console.log("HOTEL OFFERS DATA: ", hotelOffersData);
     //console.log("HOTEL OFFERS DATA: ", JSON.stringify(hotelOffersData, null, 2));
 
